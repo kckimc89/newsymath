@@ -25,6 +25,8 @@ h2{margin:4px 0 8px}.hint{color:#6f7d93;line-height:1.5;margin:0 0 16px}
 .center{text-align:center}.question{font-size:26px;font-weight:900;margin:14px 0}
 .answers{max-width:560px;margin:18px auto;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .answers button,.choice button{background:#f1f4fa;border:2px solid #e0e6ef;border-radius:18px;padding:17px;font-size:23px;font-weight:900}
+.answers button.wrongChoice{background:#ffe7e7;border-color:#ef9a9a;color:#9b3030;text-decoration:line-through}
+.answers button:disabled{opacity:1;cursor:not-allowed}
 .choice{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:15px 0}
 .choice button{background:#ffd84d}
 .feedback{min-height:40px;text-align:center;font-size:18px;font-weight:900;line-height:1.5}
@@ -32,11 +34,13 @@ h2{margin:4px 0 8px}.hint{color:#6f7d93;line-height:1.5;margin:0 0 16px}
 .explain{background:#fff8d8;border-radius:20px;padding:15px;max-width:760px;margin:15px auto;text-align:center;font-size:18px;line-height:1.6}
 .obj{font-size:35px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .foodrow{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:10px auto}.foodcard{background:#fff;border:2px solid #e2e7f0;border-radius:18px;padding:7px 12px;font-weight:800}.foodcard .big{font-size:32px;display:block}
-.groups{display:flex;justify-content:center;align-items:flex-start;gap:14px;flex-wrap:wrap;max-width:980px;margin:16px auto}
-.tenGroup{width:220px;padding:10px;background:#fff8d8;border:3px solid #ffd84d;border-radius:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
-.fiveGroup{width:220px;padding:10px;background:#f7f9fc;border:2px solid #dce4ef;border-radius:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
-.oneGroup{width:220px;padding:10px;background:#f7f9fc;border:2px dashed #dce4ef;border-radius:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
-.tenGroup .obj,.fiveGroup .obj,.oneGroup .obj{font-size:31px}
+.groups{display:flex;justify-content:center;align-items:flex-start;gap:10px;flex-wrap:wrap;width:100%;max-width:760px;margin:16px auto;padding:4px}
+.tenGroup,.fiveGroup,.oneGroup{max-width:100%;overflow:hidden}
+
+.tenGroup{width:min(220px,100%);padding:8px;background:#fff8d8;border:3px solid #ffd84d;border-radius:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.fiveGroup{width:min(220px,100%);padding:8px;background:#f7f9fc;border:2px solid #dce4ef;border-radius:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.oneGroup{width:min(220px,100%);padding:8px;background:#f7f9fc;border:2px dashed #dce4ef;border-radius:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.tenGroup .obj,.fiveGroup .obj,.oneGroup .obj{font-size:clamp(24px,6vw,31px);min-width:0}
 .sumvisual{display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap}
 .place{display:flex;justify-content:center;gap:18px;align-items:stretch;margin:18px auto;max-width:760px}
 .placebox{flex:1;background:#f7f9fc;border-radius:22px;padding:15px}.blocks{display:flex;flex-wrap:wrap;justify-content:center;min-height:80px}.ten{width:125px;height:42px;background:#dfe6f3;border-radius:8px;margin:4px;font-size:24px;padding-top:6px}.one{width:32px;height:32px;background:#fff;border:2px solid #dce3ef;border-radius:8px;margin:4px;padding-top:3px}
@@ -126,7 +130,7 @@ const base={
  borrow:[[12,5],[13,6],[32,8],[41,7],[52,18],[43,17],[61,25],[72,38],[54,29],[63,27],[71,26],[82,35]]
 };
 
-let mode='', questions=[], qIndex=0, score=0, attempts=0, answered=false, theme;
+let mode='', questions=[], qIndex=0, score=0, attempts=0, answered=false, theme, wrongChoices=new Set();
 let stats=JSON.parse(localStorage.getItem('mathV6Stats')||'{}');
 
 const $=id=>document.getElementById(id);
@@ -220,10 +224,270 @@ function revealAnswer(){
 }
 function answerButtons(correct){
  const vals=[correct,correct-1,correct+1,correct+2].filter(x=>x>0);
- return `<div class="answers">${shuffle([...new Set(vals)]).map(v=>`<button onclick="answer(${v===correct})">${v}</button>`).join('')}</div>`;
+ return `<div class="answers">${shuffle([...new Set(vals)]).map(v=>{
+   const wrong=wrongChoices.has(v);
+   return `<button ${wrong?'disabled':''} class="${wrong?'wrongChoice':''}" onclick="chooseNumber(${v},${correct})">${wrong?'❌ '+v:v}</button>`;
+ }).join('')}</div>`;
+}
+function chooseNumber(v,correct){
+ if(answered || wrongChoices.has(v)) return;
+ if(v===correct){ answer(true); }
+ else{
+   attempts++;
+   wrongChoices.add(v);
+   // Re-render only the answer area so the chosen wrong answer is visibly marked.
+   const holder=document.querySelector('.answers');
+   if(holder){
+     const temp=document.createElement('div');
+     temp.innerHTML=answerButtons(correct);
+     holder.replaceWith(temp.firstElementChild);
+   }
+   if(attempts<3){
+     feedback.innerHTML=`🌱 <b>${v}</b>는 아니에요. ❌ 표시된 답은 다시 고르지 말고, <b>다른 답</b>을 생각해 보세요. (남은 기회 ${3-attempts}번)`;
+   }else{
+     answered=true;record(false);
+     feedback.innerHTML=`💡 이번에는 여기까지예요. 정답은 <b>${correct}</b>이에요.`;
+     nextBtn.style.display='inline-block';
+     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+   }
+ }
 }
 function renderQuestion(){
- pickTheme();attempts=0;answered=false;
+ pickTheme();attempts=0;answered=false;wrongChoices=new Set();
+ title.textContent=names[mode];
+ hint.textContent={
+  count:'그림의 개수를 세고 맞는 숫자를 골라보세요.',
+  add:'두 종류의 사물을 각각 세고, 하나씩 끌어 더해 보는 경험을 해보세요.',
+  sub:'사물을 하나씩 끌어 옮기면서 몇 개가 없어지는지 생각해 보세요.',
+  place:'십의 자리와 일의 자리를 10개 묶음과 낱개로 살펴보세요.',
+  add2:'십의 묶음과 낱개를 따로 생각하며 계산해 보세요.',
+  sub2:'십의 묶음과 낱개를 따로 생각하며 계산해 보세요.',
+  carry:'일의 자리에서 10개가 모이면 한 묶음으로 바꿔요.',
+  borrow:'필요하면 10개짜리 한 묶음을 풀어 낱개로 바꿔요.'
+ }[mode];
+ bar.style.width=(qIndex/questions.length*100)+'%';feedback.textContent='';nextBtn.style.display='none';
+ const q=questions[qIndex];let b='';
+ if(mode==='count'){const n=q[0];b=`<div class="question">몇 개일까요?</div>${grouped(n,theme[0].e)}${answerButtons(n)}`;}
+ else if(mode==='add'){
+  const[a,c]=q,n=a+c;
+  b=`${foodLabel()}<div class="question">${a} + ${c} = ?</div>
+  <div class="dragBoard">
+   <div class="zone" id="addA"><h3>${theme[0].e} ${a}개</h3>${Array.from({length:a},(_,k)=>`<div class="dragitem" draggable="true" data-kind="a" data-id="${k}">${theme[0].e}</div>`).join('')}</div>
+   <div class="zone" id="addB"><h3>${theme[1].e} ${c}개</h3>${Array.from({length:c},(_,k)=>`<div class="dragitem" draggable="true" data-kind="b" data-id="${k}">${theme[1].e}</div>`).join('')}</div>
+  </div>
+  <div class="explain">사물은 항상 <b>5개씩 한 줄</b>로 보여요. 하나씩 끌어 합치고, 5개 + 5개가 되면 <b>10개</b>라고 생각해요.</div>
+  <div class="zone" id="addResult"><h3>➕ 합친 곳</h3><div id="addMoved" style="display:grid;grid-template-columns:repeat(5,56px);justify-content:center;gap:5px"></div></div>
+  <div class="choice"><button onclick="checkAdd(${n})">다 옮겼어요!</button></div>`;
+ }
+ else if(mode==='sub'){
+  const[a,c]=q,n=a-c;
+  b=`<div class="question">${a} - ${c} = ?</div>
+  <div class="dragBoard">
+   <div class="zone" id="subSource"><h3>${theme[0].e} ${a}개</h3>${Array.from({length:a},(_,k)=>`<div class="dragitem" draggable="true" data-id="${k}">${theme[0].e}</div>`).join('')}</div>
+   <div class="zone" id="subGone"><h3>💨 없어진 곳</h3></div>
+  </div>
+  <div class="explain">${c}개를 <b>하나씩 끌어</b> 없애 보세요.</div>
+  <div class="choice"><button onclick="checkSub(${c},${n})">다 옮겼어요!</button></div>`;
+ }
+ else if(mode==='place'){
+  const n=q[0],t=Math.floor(n/10),o=n%10;
+  b=`<div class="question">${n}은 몇 십과 몇 일까요?</div>${blocks(n)}
+  <div class="explain">${n} = <b>${t*10} + ${o}</b></div>${answerButtons(n)}`;
+ }
+ else if(mode==='add2'||mode==='sub2'){
+  const[a,c]=q,n=mode==='add2'?a+c:a-c,op=mode==='add2'?'+':'−';
+  b=`${foodLabel()}<div class="question">${a} ${op} ${c} = ?</div>${blocks(a,theme[0].e)}<div style="font-size:30px;font-weight:900">${op}</div>${blocks(c,theme[1].e)}
+  <div class="explain">10개씩 묶음과 낱개를 따로 보면서 계산해보세요.</div>${answerButtons(n)}`;
+ }
+ else if(mode==='carry'){
+  const[a,c]=q,n=a+c;
+  b=`${foodLabel()}<div class="question">${a} + ${c} = ?</div>${blocks(a,theme[0].e)}<div style="font-size:30px">＋</div>${blocks(c,theme[1].e)}
+  <div class="explain">일의 자리 ${a%10} + ${c%10} = ${(a%10)+(c%10)}개. <b>10개가 모이면 한 묶음</b>으로 바꿔요.</div>${answerButtons(n)}`;
+ }
+ else if(mode==='borrow'){
+  const[a,c]=q,n=a-c;
+  b=`${foodLabel()}<div class="question">${a} − ${c} = ?</div>${blocks(a,theme[0].e)}
+  <div class="explain">${a%10}개에서 ${c%10}개를 빼기 어렵다면 <b>10개짜리 한 묶음을 풀어</b> 낱개로 바꿔요.</div>${answerButtons(n)}`;
+ }
+ body.innerHTML=b;setupDrag();
+}
+function setupDrag(){
+ document.querySelectorAll('.dragitem').forEach(el=>{
+  el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.id);e.dataTransfer.setData('kind',el.dataset.kind||'sub');el.classList.add('dragging')});
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+ });
+ const addResult=$('addResult'),addA=$('addA'),addB=$('addB');
+ if(addResult){
+  addResult.addEventListener('dragover',e=>e.preventDefault());
+  addResult.addEventListener('drop',e=>{
+   e.preventDefault();const id=e.dataTransfer.getData('text/plain'),kind=e.dataTransfer.getData('kind');
+   const source=(kind==='a'?addA:addB);const el=source.querySelector(`[data-id="${id}"]`);
+   if(el){el.remove();$('addMoved').insertAdjacentHTML('beforeend',`<span class="dragitem">${kind==='a'?theme[0].e:theme[1].e}</span>`);}
+  });
+  enableTouchDrag(addA,addResult,'a');enableTouchDrag(addB,addResult,'b');
+ }
+ const gone=$('subGone'),source=$('subSource');
+ if(gone&&source){gone.addEventListener('dragover',e=>e.preventDefault());gone.addEventListener('drop',e=>{
+  e.preventDefault();const id=e.dataTransfer.getData('text/plain'),el=source.querySelector(`[data-id="${id}"]`);
+  if(el){el.remove();gone.insertAdjacentHTML('beforeend',`<span class="dragitem">${theme[0].e}</span>`);}
+ });enableTouchDrag(source,gone,'sub');}
+}
+function enableTouchDrag(source,target,kind){
+ let selected=null;
+ source.addEventListener('touchstart',e=>{
+  const el=e.target.closest('.dragitem');
+  if(el&&!el.classList.contains('moved')){selected=el;el.classList.add('dragging');}
+ },{passive:true});
+ source.addEventListener('touchend',e=>{
+  if(!selected)return;
+  selected.classList.remove('dragging');selected.remove();
+  if(kind==='a'||kind==='b')$('addMoved').insertAdjacentHTML('beforeend',`<span class="dragitem">${kind==='a'?theme[0].e:theme[1].e}</span>`);
+  else target.insertAdjacentHTML('beforeend',`<span class="dragitem">${theme[0].e}</span>`);
+  selected=null;
+ },{passive:true});
+}
+function checkAdd(correct){
+ const moved=$('addMoved')?.querySelectorAll('.dragitem').length||0;
+ const [a,c]=questions[qIndex], total=a+c;
+ if(moved===total){
+   answered=true;score++;record(true);
+   body.insertAdjacentHTML('beforeend',`
+     <div class="resultPanel">
+       <div class="resultBig">🎉 합하니까 ${total}개가 되었네요!</div>
+       <div class="resultObjects"><span>${theme[0].e} ${a}개</span><span class="arrow">＋</span><span>${theme[1].e} ${c}개</span><span class="arrow">＝</span><b>${total}개</b></div>
+       <div class="equation">${a} + ${c} = ${total}</div>
+       <div class="explain">${theme[0].n} ${a}개에 ${theme[1].n} ${c}개를 더하니 <b>모두 ${total}개</b>가 되었어요.</div>
+     </div>`);
+   feedback.textContent='정말 잘했어요! 그림과 숫자가 연결되었어요.';
+   nextBtn.style.display='inline-block';
+   nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+ }else{
+   attempts++;
+   if(attempts<3){
+     feedback.innerHTML=`🌱 아직 ${total-moved}개가 남았어요. <b>하나씩 끌어와 볼까요?</b> (남은 기회 ${3-attempts}번)`;
+   }else{
+     answered=true;record(false);
+     feedback.innerHTML=`💡 모두 ${total}개가 되어야 해요. 정답은 <b>${correct}</b>이에요.`;
+     body.insertAdjacentHTML('beforeend',`<div class="resultPanel"><div class="equation">${a} + ${c} = ${total}</div><div class="explain">${a}개와 ${c}개를 합하면 ${total}개예요.</div></div>`);
+     nextBtn.style.display='inline-block';
+     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+   }
+ }
+}
+function checkSub(need,correct){
+ const moved=$('subGone')?.querySelectorAll('.dragitem').length||0;
+ const [a,c]=questions[qIndex], total=a-c;
+ if(moved===need){
+   answered=true;score++;record(true);
+   body.insertAdjacentHTML('beforeend',`
+    <div class="resultPanel">
+      <div class="resultBig">🎉 ${c}개를 옮겨 없애니 ${total}개가 남았네요!</div>
+      <div class="equation">${a} − ${c} = ${total}</div>
+      <div class="explain">${a}개에서 ${c}개를 빼니 <b>${total}개가 남았어요.</b></div>
+    </div>`);
+   feedback.textContent='그림으로 뺄셈을 이해했어요!';
+   nextBtn.style.display='inline-block';
+   nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+ }else{
+   attempts++;
+   if(attempts<3)feedback.innerHTML=`🌱 ${moved}개를 옮겼어요. <b>${need}개</b>를 옮겨야 해요. (남은 기회 ${3-attempts}번)`;
+   else{
+     answered=true;record(false);
+     feedback.innerHTML=`💡 ${need}개가 없어져야 해요. 정답은 <b>${correct}</b>이에요.`;
+     body.insertAdjacentHTML('beforeend',`<div class="resultPanel"><div class="equation">${a} − ${c} = ${total}</div><div class="explain">${a}개에서 ${c}개를 빼면 ${total}개가 남아요.</div></div>`);
+     nextBtn.style.display='inline-block';
+     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+   }
+ }
+}
+function renderTen(){
+ title.textContent=names.ten;
+ hint.textContent='사과는 항상 5개씩 한 줄로 보여요. 5개 + 5개가 되면 10개예요.';
+ bar.style.width=(qIndex/questions.length*100)+'%';
+ feedback.textContent=''; nextBtn.style.display='none'; attempts=0; answered=false;
+
+ body.innerHTML=`<div class="question">6개에서 시작해서 <b>10개</b>를 만들어 보세요.</div>
+ <div class="dragBoard">
+   <div class="zone" id="tenSource">
+     <h3>🍎 더 가져오기</h3>
+     <div id="tenSupply">
+       ${Array.from({length:6},(_,k)=>`<div class="dragitem tenApple" draggable="true" data-id="${k}">🍎</div>`).join('')}
+     </div>
+     <small>사과를 하나씩 끌어 주세요.</small>
+   </div>
+   <div class="zone" id="tenTarget">
+     <h3>🔟 10개 한 묶음</h3>
+     <div id="tenObjs" class="tenTargetVisual">${grouped(6,'🍎')}</div>
+   </div>
+ </div>
+ <div class="explain">현재 <b id="tenCount">6개</b>예요. 필요한 만큼만 하나씩 옮겨서 10개를 만들어 보세요.</div>
+ <div class="choice"><button onclick="checkTen()">10개가 되었어요!</button></div>`;
+
+ const source=$('tenSource'), target=$('tenTarget');
+ source.querySelectorAll('.tenApple').forEach(el=>{
+   el.addEventListener('dragstart',e=>{
+     e.dataTransfer.setData('text/plain',el.dataset.id);
+     el.classList.add('dragging');
+   });
+   el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+ });
+ target.addEventListener('dragover',e=>e.preventDefault());
+ target.addEventListener('drop',e=>{
+   e.preventDefault();
+   const id=e.dataTransfer.getData('text/plain');
+   const el=source.querySelector(`[data-id="${id}"]`);
+   if(el){el.remove(); addTenApple();}
+ });
+ enableTouchTen(source,target);
+}
+function addTenApple(){
+ const n=$('tenObjs').querySelectorAll('.obj').length;
+ if(n<10){
+   $('tenObjs').innerHTML=grouped(n+1,'🍎');
+   $('tenCount').textContent=(n+1)+'개';
+   feedback.textContent=(n+1===10)?'🎉 10개가 되었어요! 5개와 5개를 합치면 10개예요.':'잘하고 있어요. 하나씩 세어 보세요.';
+ }
+}
+function enableTouchTen(source,target){
+ let selected=null;
+ source.addEventListener('touchstart',e=>{
+   const el=e.target.closest('.tenApple');
+   if(el){selected=el;el.classList.add('dragging');}
+ },{passive:true});
+ source.addEventListener('touchend',e=>{
+   if(!selected)return;
+   selected.classList.remove('dragging');
+   selected.remove();
+   addTenApple();
+   selected=null;
+ },{passive:true});
+}
+function checkTen(){
+ const n=$('tenObjs')?.querySelectorAll('.obj').length||0;
+ stats.ten??={c:0,t:0};
+ stats.ten.t++;
+ if(n===10){
+   stats.ten.c++;
+   answered=true;
+   score++;
+   feedback.innerHTML='🎉 <b>10개가 되었어요!</b> 5개와 5개를 합하면 10개예요.';
+   nextBtn.style.display='inline-block';
+   nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+ }else{
+   attempts++;
+   if(attempts<3){
+     feedback.innerHTML=`🌱 지금은 <b>${n}개</b>예요. 10개까지 <b>${10-n}개</b> 더 옮겨 보세요. (남은 기회 ${3-attempts}번)`;
+   }else{
+     answered=true;
+     feedback.innerHTML='💡 10개를 만들려면 4개를 더 옮겨야 해요.';
+     nextBtn.style.display='inline-block';
+     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
+   }
+ }
+ localStorage.setItem('mathV6Stats',JSON.stringify(stats));
+}
+function renderQuestion(){
+ pickTheme();attempts=0;answered=false;wrongChoices=new Set();
  title.textContent=names[mode];
  hint.textContent={
   count:'그림의 개수를 세고 맞는 숫자를 골라보세요.',
