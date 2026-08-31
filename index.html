@@ -132,7 +132,9 @@ h2{margin:4px 0 8px}.hint{color:#6f7d93;line-height:1.5;margin:0 0 16px}
 .teachingCard{max-width:760px;margin:16px auto;padding:18px;border-radius:22px;background:#fff;border:2px solid #e1e7ef}
 .teachingCard .equation{font-size:40px;font-weight:950;margin:8px}
 </style>
-</head>
+<style>
+.s2Board{width:min(700px,94vw);margin:12px auto;padding:10px;border:3px solid #e4d6b4;border-radius:22px;background:#fffaf0;box-sizing:border-box}.s2Row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:6px;background:#fff;border-radius:14px;min-height:55px}.s2Row+.s2Row{margin-top:6px}.s2Cell{display:flex;align-items:center;justify-content:center;min-width:0;font-size:clamp(24px,6vw,40px)}.s2Bundles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.s2Bundle{width:min(300px,100%);padding:6px;border:3px solid #f0d36a;border-radius:18px;background:#fff;box-sizing:border-box}.s2Bundle h3{text-align:center;margin:3px;font-size:17px}.s2Eq{text-align:center;font-size:36px;font-weight:950;margin:10px}.s2Source{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:12px;border-radius:18px;background:#f5f7fb}.s2Apple{width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:35px;touch-action:none;user-select:none}
+</style></head>
 <body>
 <div class="app">
 <header class="header">
@@ -1157,88 +1159,18 @@ function checkSub(need,correct){
  const moved=$('subGone')?.querySelectorAll('.dragitem').length||0;
  const [a,c]=questions[qIndex], total=a-c;
  if(moved===need){
-   answered=true;score++;record(true);
-   body.insertAdjacentHTML('beforeend',`
-    <div class="resultPanel">
-      <div class="resultBig">🎉 ${c}개를 옮겨 없애니 ${total}개가 남았네요!</div>
-      <div class="equation">${a} − ${c} = ${total}</div>
-      <div class="explain">${a}개에서 ${c}개를 빼니 <b>${total}개가 남았어요.</b></div>
-    </div>`);
-   feedback.textContent='그림으로 뺄셈을 이해했어요!';
-   nextBtn.style.display='inline-block';
-   nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
- }else{
-   attempts++;
-   if(attempts<3)feedback.innerHTML=`🌱 ${moved}개를 옮겼어요. <b>${need}개</b>를 옮겨야 해요. (남은 기회 ${3-attempts}번)`;
-   else{
-     answered=true;record(false);
-     feedback.innerHTML=`💡 ${need}개가 없어져야 해요. 정답은 <b>${correct}</b>이에요.`;
-     body.insertAdjacentHTML('beforeend',`<div class="resultPanel"><div class="equation">${a} − ${c} = ${total}</div><div class="explain">${a}개에서 ${c}개를 빼면 ${total}개가 남아요.</div></div>`);
-     nextBtn.style.display='inline-block';
-     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
-   }
- }
+   answered=true;score++;record(tfunction s2Board(n,e='🍎'){
+ n=Math.max(0,Math.min(10,n)); const row=k=>Array.from({length:5},(_,i)=>`<div class="s2Cell">${i<k?e:''}</div>`).join('');
+ return `<div class="s2Board"><div class="s2Row">${row(Math.min(5,n))}</div><div class="s2Row">${row(Math.max(0,n-5))}</div></div>`;
 }
-function renderTen(){
- title.textContent=names.ten;hint.textContent='10개가 한 묶음이라는 것을 이해해 봐요. 사과는 1줄에 10개가 정확히 들어갑니다.';
- bar.style.width='0';feedback.textContent='';nextBtn.style.display='none';pickTheme();
- body.innerHTML=`<div class="question">6개에서 시작해서 10개를 만들어 보세요.</div>
- <div class="dragBoard">
-  <div class="zone" id="tenSource"><h3>🍎 더 가져오기</h3>
-   ${Array.from({length:6},(_,k)=>`<div class="dragitem" draggable="true" data-id="${k}">🍎</div>`).join('')}
-  </div>
-  <div class="zone" id="tenTarget"><h3>🔟 10개 한 묶음</h3><div id="tenObjs">${grouped(6,'🍎')}</div></div>
- </div>
- <p class="hint">사과는 항상 <b>5개씩 한 줄</b>로 보여요. 5개 + 5개가 되면 <b>10개 한 묶음</b>이에요. 사과를 <b>하나씩 끌어</b> 오른쪽으로 옮겨 보세요.</p>
- <div class="choice"><button onclick="checkTen()">10개가 되었어요!</button></div>`;
- const source=$('tenSource'),target=$('tenTarget');
- source.querySelectorAll('.dragitem').forEach(el=>el.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',el.dataset.id)));
- target.addEventListener('dragover',e=>e.preventDefault());
- target.addEventListener('drop',e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain'),el=source.querySelector(`[data-id="${id}"]`);if(el){el.remove();addTenApple();}});
- enableTouchDragTen(source,target);
-}
-function addTenApple(){
- const n=$('tenObjs').querySelectorAll('.obj').length;
- if(n<10){$('tenObjs').innerHTML=grouped(n+1,'🍎');feedback.textContent=`지금 ${n+1}개예요. ${n+1===10?'🎉 10개가 한 묶음이 되었어요!':'조금 더 옮겨 보세요.'}`;}
-}
-function enableTouchDragTen(source,target){
- let selected=null;
- source.addEventListener('touchstart',e=>{const el=e.target.closest('.dragitem');if(el){selected=el;el.classList.add('dragging')}},{passive:true});
- source.addEventListener('touchend',e=>{if(selected){selected.classList.remove('dragging');selected.remove();addTenApple();selected=null;}},{passive:true});
-}
-function checkTen(){
- const n=$('tenObjs').querySelectorAll('.obj').length;
- stats.ten??={c:0,t:0};stats.ten.t++;
- if(n===10){stats.ten.c++;feedback.textContent='🎉 좋아요! 10개가 한 묶음이 되었어요.'}
- else feedback.textContent=`지금 ${n}개예요. 10개까지 ${10-n}개 더 필요해요.`;
- localStorage.setItem('mathV6Stats',JSON.stringify(stats));
-}
-function nextQuestion(){
- qIndex++;
- if(qIndex>=questions.length){finishRound();return}
- renderQuestion();
-}
-function finishRound(){
- bar.style.width='100%';
- body.innerHTML=`<div style="font-size:70px">🏆</div>
- <div class="question">10문제를 모두 풀었어요!</div>
- <p><b>${score} / ${questions.length}</b> 문제를 스스로 맞혔어요.</p>
- <div class="explain">같은 단계의 <b>새로운 문제</b>를 더 풀어볼 수도 있어요.</div>
- <div class="choice">
-  <button onclick="repeatRound()">🔄 같은 형식의 새 문제 10개</button>
-  <button onclick="show('home')">🏠 메뉴로 돌아가기</button>
- </div>`;
- feedback.textContent='';nextBtn.style.display='none';
-}
-function repeatRound(){
- qIndex=0;score=0;attempts=0;answered=false;questions=newQuestions(mode);pickTheme();
- if(mode==='ten')renderTen();else renderQuestion();
-}
-function renderStats(){
- const order=['count','ten','add','sub','place','add2','sub2','carry','borrow'];
- $('stats').innerHTML=order.map(k=>{const s=stats[k]||{c:0,t:0};return `<div class="stat"><span>${names[k]}</span><span>${s.t?`${s.c}/${s.t}`:'학습 전'}</span></div>`}).join('');
-}
-function resetStats(){if(confirm('학습 기록을 초기화할까요?')){stats={};localStorage.removeItem('mathV6Stats');renderStats()}}
-</script>
-</body>
-</html>
+function s2Bundle(){return `<div class="s2Bundle"><h3>🔟 10개 묶음</h3>${s2Board(10)}</div>`}
+function s2Bundles(n){return `<div class="s2Bundles">${Array.from({length:n},()=>s2Bundle()).join('')}</div>`}
+let s2step=0,s2target=10,s2count=0,s2drag=null;
+function renderTen(){title.textContent=names.ten;hint.textContent='5개씩 보고 10개 묶음으로 생각해 봐요.';bar.style.width='0%';feedback.textContent='';nextBtn.style.display='none';attempts=0;answered=false;s2step=0;s2Intro();}
+function s2Intro(){const d=[['5개',s2Board(5),'5','한 줄에 5개가 들어가요.'],['5개 + 5개',s2Board(10),'5 + 5 = 10','5개와 5개를 합하면 10개예요.'],['10개 묶음 2개',s2Bundles(2),'10 + 10 = 20','10개 묶음이 2개면 20개예요.'],['10개 묶음 3개',s2Bundles(3),'10 + 10 + 10 = 30','10개 묶음이 3개면 30개예요.']][s2step];body.innerHTML=`<div class="question"><b>${d[0]}</b></div><div class="teachingCard">${d[1]}<div class="s2Eq">${d[2]}</div><div class="explain">${d[3]}</div></div><div class="choice"><button onclick="s2next()">${s2step<3?'다음 →':'직접 만들어 보기 →'}</button></div>`;}
+function s2next(){if(s2step<3){s2step++;s2Intro();}else s2Practice();}
+function s2Practice(){s2target=[10,20,30][Math.floor(Math.random()*3)];s2count=0;s2drag=null;attempts=0;answered=false;body.innerHTML=`<div class="question">🔟 <b>10개 묶음 ${s2target/10}개</b>를 만들어 보세요.</div><div class="teachingCard"><div id="s2made">${s2Board(0)}</div><div id="s2bundle"></div></div><div class="zone"><h3>🍎 사과를 하나씩 가져오기</h3><div id="s2source" class="s2Source">${Array.from({length:s2target},(_,i)=>`<div class="s2Apple" draggable="true" data-i="${i}">🍎</div>`).join('')}</div><div class="hint">사과 하나를 손가락으로 누르면 빈 공간으로 이동합니다. 마우스에서는 끌어 주세요.</div></div><div class="explain">현재 <b id="s2num">0개</b>예요.</div><div class="choice"><button onclick="s2check()">완성했어요!</button></div>`;s2setup();}
+function s2move(el){if(!el||answered||s2count>=s2target)return;s2count++;el.remove();let b=Math.floor(s2count/10),r=s2count%10;$('s2made').innerHTML=r?s2Board(r):'';$('s2bundle').innerHTML=b?s2Bundles(b):'';$('s2num').textContent=s2count+'개';feedback.textContent=s2count%10===0?`🎉 10개 묶음 ${b}개가 되었어요!`:`좋아요! ${s2count}개예요.`;}
+function s2setup(){const src=$('s2source');src.querySelectorAll('.s2Apple').forEach(el=>{el.addEventListener('dragstart',e=>{s2drag=el;e.dataTransfer.setData('text/plain',el.dataset.i);});el.addEventListener('dragend',()=>s2drag=null);el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){e.preventDefault();s2drag=el;setTimeout(()=>{if(s2drag===el){s2move(el);s2drag=null;}},180);}});});const board=$('s2made');board.addEventListener('dragover',e=>e.preventDefault());board.addEventListener('drop',e=>{e.preventDefault();if(s2drag){s2move(s2drag);s2drag=null;}});}
+function s2check(){if(s2count===s2target){answered=true;score++;let b=s2target/10;feedback.innerHTML=`🎉 <b>잘했어요!</b> 10개 묶음 ${b}개는 ${s2target}개예요.`;body.insertAdjacentHTML('beforeend',`<div class="tenResult">${s2Bundles(b)}<div class="s2Eq">10 × ${b} = ${s2target}</div><div class="explain">10개 묶음이 ${b}개 있으니 ${s2target}개예요.</div></div>`);nextBtn.style.display='inline-block';nextBtn.textContent='다음 문제 →';}else{attempts++;feedback.innerHTML=attempts<3?`🌱 아직 ${s2count}개예요. 목표 ${s2target}개까지 더 옮겨 보세요.`:`💡 10개씩 묶어 생각해 보세요. 정답은 ${s2target}개예요.`;if(attempts>=3){answered=true;nextBtn.style.display='inline-block';nextBtn.textContent='다음 문제 →';}}}
+
