@@ -32,7 +32,7 @@ h1,h2{margin:4px 0 8px}.hint{color:#6f7d93;margin:0 0 18px;line-height:1.5}
 .badge{display:inline-block;background:#fff1a8;border-radius:99px;padding:7px 11px;font-weight:900;font-size:13px}
 @media(min-width:760px){.menu{grid-template-columns:repeat(3,1fr)}.app{padding:28px}}
 </style>
-</head>
+<style>.foodrow{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.foodcard{background:#fff;border:2px solid #e2e7f0;border-radius:18px;padding:8px 12px;font-weight:800}.foodcard .big{font-size:34px;display:block}.mixGroups{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:15px auto}.mixGroup{padding:10px 12px;border-radius:18px;background:#f8f9fc;border:2px solid #e0e6ef;min-width:145px}.mixGroup b{display:block;margin-bottom:7px}</style></head>
 <body>
 <div class="app">
 <header class="header"><div><div class="title">🌈 수학놀이터 V6</div><div class="sub">수의 뜻을 보고, 만지고, 생각해요</div></div><button class="parent" onclick="show('parent')">👨‍👩‍👧 부모님</button></header>
@@ -80,7 +80,8 @@ let mode='',i=0,score=0,answered=false,stats=JSON.parse(localStorage.getItem('ma
 
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='parent')renderStats()}
 function start(m){mode=m;i=0;score=0;answered=false;show('lesson');if(m==='ten'){tenLesson();return}render()}
-function objs(n,e='🍎'){return Array.from({length:n},()=>`<span class="obj">${e}</span>`).join('')}
+const foodSets=[[{e:'🍎',n:'사과'},{e:'🍐',n:'배'}],[{e:'🍓',n:'딸기'},{e:'🍊',n:'귤'}],[{e:'🍪',n:'쿠키'},{e:'🍩',n:'도넛'}],[{e:'🐟',n:'물고기'},{e:'🐙',n:'문어'}],[{e:'🚗',n:'자동차'},{e:'🚌',n:'버스'}],[{e:'⭐',n:'별'},{e:'❤️',n:'하트'}]]; let theme=foodSets[Math.floor(Math.random()*foodSets.length)];
+function objs(n,e=theme[0].e){return Array.from({length:n},()=>`<span class="obj">${e}</span>`).join('')}
 function record(ok){stats[mode]??={c:0,t:0};stats[mode].t++;if(ok)stats[mode].c++;localStorage.setItem('mathV6Stats',JSON.stringify(stats))}
 function answer(ok){if(answered)return;answered=true;record(ok);if(ok){score++;feedback.textContent='🎉 좋아요!';}else feedback.textContent='🌱 괜찮아요. 그림을 다시 천천히 살펴봐요.';nextBtn.style.display='inline-block'}
 function buttons(correct,vals=[correct,correct-1,correct+1,correct+2]){vals=[...new Set(vals.filter(x=>x>0))].sort(()=>Math.random()-.5);return `<div class="answers">${vals.map(v=>`<button onclick="answer(${v===correct})">${v}</button>`).join('')}</div>`}
@@ -93,7 +94,7 @@ else if(mode==='add'){let[a,c]=q,n=a+c;b=`<div class="sumvisual"><div>${objs(a)}
 else if(mode==='sub'){let[a,c]=q,n=a-c;b=`<div class="visual">${objs(a)}</div><div class="explain">${c}개가 사라지면 어떻게 될까요?</div><div class="question">${a} - ${c} = ?</div>${buttons(n,[n,n-1,n+1,n+2])}`}
 else if(mode==='place'){let n=q[0],t=Math.floor(n/10),o=n%10;b=`<div class="question">${n}은 몇 십과 몇 일까요?</div><div class="place"><div class="placebox"><h3>십의 자리</h3><div class="blocks">${objs(t,'🟦')}</div><b>${t}십</b></div><div class="placebox"><h3>일의 자리</h3><div class="blocks">${objs(o,'🔵')}</div><b>${o}개</b></div></div><div class="explain"><b>${n} = ${t*10} + ${o}</b></div>${buttons(n,[n,t*10+o,t*10+o+1,t*10+o-1])}`}
 else if(mode==='add2'||mode==='sub2'){let[a,c]=q,n=mode==='add2'?a+c:a-c;let op=mode==='add2'?'+':'−';b=`<div class="question">${a} ${op} ${c} = ?</div>${blocks(a)}<div style="font-size:30px;font-weight:900">${op}</div>${blocks(c)}<div class="explain">십의 묶음과 낱개를 따로 생각해 보세요.</div>${buttons(n,[n,n-1,n+1,n+2])}`}
-else if(mode==='carry'){let[a,c]=q,n=a+c;b=`<div class="question">${a} + ${c} = ?</div>${blocks(a)}<div style="font-size:30px">＋</div>${blocks(c)}<div class="explain">일의 자리 ${a%10}개와 ${c%10}개를 합치면 <b>${(a%10)+(c%10)}개</b>예요.<br>10개가 모이면 <b>한 묶음</b>으로 바꿔볼 수 있어요.</div>${buttons(n,[n,n-1,n+1,n+2])}`}
+else if(mode==='carry'){let[a,c]=q,n=a+c;b=`${foodLabel()}<div class="question">${a} + ${c} = ?</div>${grouped(a,theme[0].e)}<div style="font-size:30px">＋</div>${grouped(c,theme[1].e)}<div class="explain">일의 자리 ${a%10}개와 ${c%10}개를 합치면 <b>${(a%10)+(c%10)}개</b>예요.<br>10개가 모이면 <b>한 묶음</b>으로 바꿔볼 수 있어요.</div>${buttons(n,[n,n-1,n+1,n+2])}`}
 else if(mode==='borrow'){let[a,c]=q,n=a-c;b=`<div class="question">${a} − ${c} = ?</div>${blocks(a)}<div class="explain">${a%10}개에서는 ${c%10}개를 뺄 수 없을 때, <b>10개짜리 한 묶음을 풀어</b> 낱개로 바꿔요.</div>${buttons(n,[n,n-1,n+1,n+2])}`}
 body.innerHTML=b
 }
