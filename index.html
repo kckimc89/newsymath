@@ -122,7 +122,7 @@ function updateBundleDisplay(){
 function checkBundle(){
  const st=document.getElementById('st');
  if(G.count===G.target){
-   st.innerHTML='🎉 <b>'+G.target+'개</b>! 10개 묶음 '+(G.target/10)+'개예요.';
+   st.innerHTML='🎉 <b>다 옮겼어요!</b><br><b>'+G.target+'을 잘 만들었어요!</b><br>🔟 '+(G.target/10)+'개 = '+G.target;
    const c=document.getElementById('check');
    c.textContent='새로운 문제';
    c.onclick=bundlePractice;
@@ -137,23 +137,99 @@ function answersFor(correct,next){
  let a=[correct];while(a.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!a.includes(x))a.push(x)}a.sort(()=>Math.random()-.5);
  a.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(q.disabled)return;if(x===correct){q.classList.add('right');document.getElementById('st').innerHTML='🎉 맞았어요! <b>'+correct+'</b>개예요.';setTimeout(next,650)}else{q.classList.add('wrong');q.disabled=true;document.getElementById('st').innerHTML='🌱 틀렸어요. 빨간 답은 다시 고르지 않아도 돼요.'}};document.getElementById('answers').appendChild(q)})
 }
-/* ③ */
-function addStage(){let a=1+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*9),c=a+b;twoNumberStage('③ 덧셈',a,b,'+',c,'합하니까 '+c+'개가 되었네요!',addStage)}
-/* ④ */
-function subStage(){let a=2+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*a),c=a-b;twoNumberStage('④ 뺄셈',a,b,'−',c,a+'개에서 '+b+'개를 빼면 '+c+'개예요.',subStage)}
-function twoNumberStage(title,a,b,op,c,success,next){
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+title+'</h2><div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+board(a,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+board(b,'🍐')+'</div></div><div class="eq">'+a+' '+op+' '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;numericAnswers(c,()=>{document.getElementById('st').innerHTML='🎉 '+a+' '+op+' '+b+' = <b>'+c+'</b><br>'+success;setTimeout(()=>retry(next),900)})}
-function numericAnswers(correct,done){
- let a=[correct];while(a.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!a.includes(x))a.push(x)}a.sort(()=>Math.random()-.5);
- a.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(q.disabled)return;if(x===correct){q.classList.add('right');q.disabled=true;done()}else{q.classList.add('wrong');q.disabled=true;document.getElementById('st').innerHTML='🌱 틀렸어요. 다른 답을 생각해 보세요.'}};document.getElementById('answers').appendChild(q)})
+/* ③ 덧셈: physically drag objects from each group into the common board */
+function addStage(){
+ let a=1+Math.floor(Math.random()*8),b=1+Math.floor(Math.random()*8);
+ renderAdd(a,b);
+}
+function renderAdd(a,b){
+ const total=a+b;
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
+ '<h2 style="text-align:center">③ 덧셈</h2>'+
+ '<div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="srcA" class="source">'+objects(a,'🍎','a')+'</div></div>'+
+ '<div class="col"><h3>🍐 '+b+'개</h3><div id="srcB" class="source">'+objects(b,'🍐','b')+'</div></div></div>'+
+ '<div class="explain">🍎과 🍐를 하나씩 끌어 가운데 수판으로 모아 보세요.</div>'+
+ '<div id="dest" class="board"><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div></div>'+
+ '<div id="st" class="status">옮긴 수: <b>0</b>개</div><div class="actions">'+B('checkAdd','다 옮겼어요!','primary')+'</div></div></div>';
+ back.onclick=menu;
+ document.querySelectorAll('.object').forEach(x=>dragObject(x,'dest',()=>updateAdd(a,b)));
+ document.getElementById('checkAdd').onclick=()=>{let n=document.querySelectorAll('#dest .filled').length;if(n===total){st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>🍎과 🍐를 합하니까 '+total+'개가 되었네요!';setTimeout(()=>retry(addStage),1000)}else st.innerHTML='🌱 아직 '+(total-n)+'개를 더 옮겨 주세요.'};
+}
+function objects(n,e,group){let s='';for(let i=0;i<n;i++)s+='<button class="object" data-group="'+group+'">'+e+'</button>';return s}
+function dragObject(el,destId,update){
+ let down=false;el.addEventListener('pointerdown',e=>{down=true;el.setPointerCapture?.(e.pointerId);el.style.opacity='.4'});
+ el.addEventListener('pointerup',e=>{if(!down)return;down=false;el.style.opacity='';let d=document.getElementById(destId).getBoundingClientRect();
+  if(e.clientX>=d.left&&e.clientX<=d.right&&e.clientY>=d.top&&e.clientY<=d.bottom){el.remove();let n=document.querySelectorAll('#'+destId+' .filled').length;let cell=document.querySelectorAll('#'+destId+' .cell:not(.filled)')[0];if(cell){cell.textContent=el.textContent;cell.classList.add('filled')}update(n+1)}
+ });el.addEventListener('pointercancel',()=>{down=false;el.style.opacity=''})
+}
+function updateAdd(a,b){let n=document.querySelectorAll('#dest .filled').length;document.getElementById('st').innerHTML='옮긴 수: <b>'+n+'</b>개　→　목표 '+(a+b)+'개'}
+
+/* ④ 뺄셈: drag objects from the board to the outside/removal area */
+function subStage(){
+ let a=3+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*a);
+ renderSub(a,b);
+}
+function renderSub(a,b){
+ const ans=a-b;
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">④ 뺄셈</h2>'+
+ '<div class="msg">🍎 '+a+'개가 있어요. 🍐 '+b+'개를 <b>하나씩 끌어 빼보세요.</b></div>'+
+ '<div id="subBoard" class="board"><div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div><div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div></div>'+
+ '<div id="remove" class="source" style="min-height:70px">여기로 빼 주세요 🍐</div>'+
+ '<div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">먼저 '+b+'개를 빼 주세요.</div></div></div>';
+ back.onclick=menu;
+ document.querySelectorAll('#subBoard .cell').forEach((c,i)=>{
+ if(i<a){
+  c.textContent='🍎'; c.classList.add('filled');
+  c.addEventListener('click',()=>{
+   if(c.classList.contains('taken')) return;
+   if(document.querySelectorAll('#remove .taken').length<b){
+    c.textContent='🍐'; c.classList.remove('filled'); c.classList.add('taken');
+    document.getElementById('remove').appendChild(c);
+    let n=document.querySelectorAll('#remove .taken').length;
+    st.innerHTML=n<b?'잘하고 있어요! '+n+'개를 뺐어요.':'🎉 '+b+'개를 다 뺐어요!';
+    if(n===b)showNumericAnswers(ans,()=>{
+      st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>'+a+'개에서 '+b+'개를 빼니 '+ans+'개가 남았네요!';
+      setTimeout(()=>retry(subStage),1000)
+    });
+   }
+  });
+ }
+});
+}
+function showNumericAnswers(correct,done){
+ const box=document.getElementById('answers');box.innerHTML='';
+ let ar=[correct];while(ar.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!ar.includes(x))ar.push(x)}ar.sort(()=>Math.random()-.5);
+ ar.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(x===correct){q.classList.add('right');q.disabled=true;done()}else{q.classList.add('wrong');q.disabled=true;document.getElementById('st').innerHTML='🌱 틀렸어요. 다른 답을 생각해 보세요.'}};box.appendChild(q)})
 }
 function retry(next){if(confirm('같은 단계의 새로운 문제를 한 번 더 풀어 볼까요?'))next();else menu()}
-/* ⑤ */
+
+/* ⑤ 받아올림: make 10 from ones, then convert to one ten bundle */
+function carryStage(){
+ let onesA=5+Math.floor(Math.random()*4),onesB=5+Math.floor(Math.random()*4);
+ let a=10+onesA,b=onesB,total=a+b;
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">⑤ 받아올림</h2>'+
+ '<div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+placeValue(a,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+placeValue(b,'🍐')+'</div></div>'+
+ '<div class="notice">일의 자리에서 '+onesA+' + '+onesB+' = '+(onesA+onesB)+'개예요.<br>10개를 모아 🔟 1묶음으로 만들어 보세요.</div>'+
+ '<div id="carryArea" class="source">'+Array.from({length:onesA+onesB},(_,i)=>'<button class="object carryObj">'+(i<onesA?'🍎':'🍐')+'</button>').join('')+'</div>'+
+ '<div class="actions">'+B('makeTen','10개를 한 묶음으로 만들기','primary')+'</div><div id="carryExplain" class="explain">아직 10개를 모으지 않았어요.</div>'+
+ '<div class="eq">'+a+' + '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">사물을 세어 보세요.</div></div></div>';
+ back.onclick=menu;makeTen.onclick=()=>{carryExplain.innerHTML='🎉 10개를 모았어요!<br>🍎/🍐 10개 → 🔟 1묶음';carryArea.innerHTML=bundle();st.innerHTML='🔟 1묶음과 남은 낱개를 생각해 보세요.';showNumericAnswers(total,()=>{st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>10개를 🔟 1묶음으로 바꾸어 계산했어요!';setTimeout(()=>retry(carryStage),1000)})}
+}
+
+/* ⑥ 받아내림: click one ten bundle to unfold it into ten objects */
+function borrowStage(){
+ let tens=2+Math.floor(Math.random()*2),ones=0+Math.floor(Math.random()*3),b=6+Math.floor(Math.random()*4),a=tens*10+ones;
+ if(a<=b)a+=10;let ans=a-b;
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">⑥ 받아내림</h2>'+
+ '<div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+placeValue(a,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+board(b,'🍐')+'</div></div>'+
+ '<div class="notice">일의 자리에서 '+b+'개를 빼야 하는데 부족해요.<br>🔟 십 묶음 1개를 눌러 <b>🍎 10개</b>로 풀어 보세요.</div>'+
+ '<div id="borrowTen" class="source"><button id="unbundle" class="drag10">🔟<small>눌러서 10개로</small></button></div>'+
+ '<div id="borrowExplain" class="explain">🔟 1묶음이 있어요.</div><div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">먼저 십 묶음을 풀어 보세요.</div></div></div>';
+ back.onclick=menu;
+ unbundle.onclick=()=>{borrowTen.innerHTML=board(10,'🍎');borrowExplain.innerHTML='🔟 1묶음 → 🍎 10개!<br>이제 일의 자리에서 빼낼 수 있어요.';st.innerHTML='🎉 10개로 바꾸었어요!';showNumericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>십 묶음 1개를 10개로 풀어서 계산했어요!';setTimeout(()=>retry(borrowStage),1000)})}
+}
 function placeValue(n,e){let t=Math.floor(n/10),o=n%10;return (t?bundles(t,e):'')+'<div class="msg">일의 자리 '+o+'개</div>'+board(o,e)}
-function carryStage(){let a=10+(5+Math.floor(Math.random()*5)),b=5+Math.floor(Math.random()*5),c=a+b;advancedStage('⑤ 받아올림',a,b,'+',c,'일의 자리에서 '+(a%10)+' + '+b+' = '+(a%10+b)+'이에요. 10개가 되면 🔟 1묶음으로 바꿔요.',carryStage,'🍎','🍐')}
-function borrowStage(){let a=20+Math.floor(Math.random()*10),b=11+Math.floor(Math.random()*8);if(b>=a)b=a-1;let c=a-b;advancedStage('⑥ 받아내림',a,b,'−',c,'일의 자리가 부족하면 🔟 십 묶음 1개를 풀어 사물 10개로 바꿔요.',borrowStage,'🍎','🍐')}
-function advancedStage(title,a,b,op,c,msg,next,e1,e2){
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+title+'</h2><div class="columns"><div class="col"><h3>'+e1+' '+a+'</h3>'+placeValue(a,e1)+'</div><div class="col"><h3>'+e2+' '+b+'</h3>'+placeValue(b,e2)+'</div></div><div class="note">'+msg+'</div><div class="eq">'+a+' '+op+' '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;numericAnswers(c,()=>{st.innerHTML='🎉 '+a+' '+op+' '+b+' = <b>'+c+'</b>';setTimeout(()=>retry(next),900)})}
+
 menu();
 })();
 </script></body></html>
