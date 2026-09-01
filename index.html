@@ -82,7 +82,9 @@ h2{margin:4px 0 8px}.hint{color:#6f7d93;line-height:1.5;margin:0 0 16px}
 .v8-expanded{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:220px;margin:8px auto;padding:7px;background:#eef7ff;border:2px solid #b9d7ef;border-radius:12px}
 .v8-expanded span{font-size:26px;line-height:1.1}
 @media(max-width:600px){.v8-columns{grid-template-columns:1fr}.v8-cell{height:48px}}
-</style>
+<style>
+.v81wrap{max-width:760px;margin:auto}.v81board{background:#fffaf0;border:3px solid #e5d5a7;border-radius:22px;padding:10px}.v81row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:7px;background:#fff;border-radius:14px}.v81row+.v81row{margin-top:7px}.v81cell{height:50px;display:flex;align-items:center;justify-content:center;font-size:34px}.v81bundles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px}.v81bundle{width:min(320px,100%);border:3px solid #ffd84d;border-radius:18px;background:#fff;padding:8px}.v81source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#f4f7fb;border-radius:18px;padding:12px}.v81apple{width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:35px;touch-action:none;user-select:none;-webkit-user-select:none}.v81eq{text-align:center;font-size:36px;font-weight:900;margin:10px}.v81msg{text-align:center;font-size:18px;font-weight:800;margin:8px;line-height:1.5}
+</style></style>
 </head>
 <body>
 <div class="app">
@@ -401,80 +403,52 @@ function checkSub(need,correct){
  const [a,c]=questions[qIndex], total=a-c;
  if(moved===need){
    answered=true;score++;record(true);
-   body.insertAdjacentHTML('beforeend',`
-    <div class="resultPanel">
-      <div class="resultBig">🎉 ${c}개를 옮겨 없애니 ${total}개가 남았네요!</div>
-      <div class="equation">${a} − ${c} = ${total}</div>
-      <div class="explain">${a}개에서 ${c}개를 빼니 <b>${total}개가 남았어요.</b></div>
-    </div>`);
-   feedback.textContent='그림으로 뺄셈을 이해했어요!';
-   nextBtn.style.display='inline-block';
-   nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
- }else{
-   attempts++;
-   if(attempts<3)feedback.innerHTML=`🌱 ${moved}개를 옮겼어요. <b>${need}개</b>를 옮겨야 해요. (남은 기회 ${3-attempts}번)`;
-   else{
-     answered=true;record(false);
-     feedback.innerHTML=`💡 ${need}개가 없어져야 해요. 정답은 <b>${correct}</b>이에요.`;
-     body.insertAdjacentHTML('beforeend',`<div class="resultPanel"><div class="equation">${a} − ${c} = ${total}</div><div class="explain">${a}개에서 ${c}개를 빼면 ${total}개가 남아요.</div></div>`);
-     nextBtn.style.display='inline-block';
-     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
-   }
- }
+   body.function v81Board(n,emoji){
+ emoji=emoji||'🍎'; n=Math.max(0,Math.min(10,n));
+ let out='<div class="v81board">';
+ for(let r=0;r<2;r++){out+='<div class="v81row">';for(let c=0;c<5;c++){let i=r*5+c;out+=`<div class="v81cell">${i<n?emoji:''}</div>`;}out+='</div>'}
+ return out+'</div>';
 }
+function v81Bundle(){return `<div class="v81bundle"><div class="v81msg">🔟 10개 묶음 1개</div>${v81Board(10,'🍎')}</div>`;}
+function v81Bundles(n){let s='<div class="v81bundles">';for(let i=0;i<n;i++)s+=v81Bundle();return s+'</div>';}
 function renderTen(){
- title.textContent=names.ten;
- hint.textContent='사과는 항상 5개씩 한 줄로 보여요. 5개 + 5개가 되면 10개예요.';
- bar.style.width=(qIndex/questions.length*100)+'%';
- feedback.textContent=''; nextBtn.style.display='none'; attempts=0; answered=false;
-
- body.innerHTML=`<div class="question">6개에서 시작해서 <b>10개</b>를 만들어 보세요.</div>
- <div class="dragBoard">
-   <div class="zone" id="tenSource">
-     <h3>🍎 더 가져오기</h3>
-     <div id="tenSupply">
-       ${Array.from({length:6},(_,k)=>`<div class="dragitem tenApple" draggable="true" data-id="${k}">🍎</div>`).join('')}
-     </div>
-     <small>사과를 하나씩 끌어 주세요.</small>
-   </div>
-   <div class="zone" id="tenTarget">
-     <h3>🔟 10개 한 묶음</h3>
-     <div id="tenObjs" class="tenTargetVisual">${grouped(6,'🍎')}</div>
-   </div>
- </div>
- <div class="explain">현재 <b id="tenCount">6개</b>예요. 필요한 만큼만 하나씩 옮겨서 10개를 만들어 보세요.</div>
- <div class="choice"><button onclick="checkTen()">10개가 되었어요!</button></div>`;
-
- const source=$('tenSource'), target=$('tenTarget');
- source.querySelectorAll('.tenApple').forEach(el=>{
-   el.addEventListener('dragstart',e=>{
-     e.dataTransfer.setData('text/plain',el.dataset.id);
-     el.classList.add('dragging');
-   });
-   el.addEventListener('dragend',()=>el.classList.remove('dragging'));
- });
- target.addEventListener('dragover',e=>e.preventDefault());
- target.addEventListener('drop',e=>{
-   e.preventDefault();
-   const id=e.dataTransfer.getData('text/plain');
-   const el=source.querySelector(`[data-id="${id}"]`);
-   if(el){el.remove(); addTenApple();}
- });
- enableTouchTen(source,target);
+ title.textContent=names.ten;hint.textContent='5개씩 한 줄로 보고, 10개 묶음으로 20과 30을 이해해요.';
+ bar.style.width='0%';feedback.textContent='';nextBtn.style.display='none';attempts=0;answered=false;
+ body.innerHTML=`<div class="v81wrap"><div class="v81msg"><b>① 5개 + 5개 = 10개</b></div>${v81Board(10,'🍎')}<div class="v81eq">5 + 5 = 10</div><div class="v81msg">5개가 두 줄이면 10개예요.</div><div class="choice"><button id="v81next">다음 →</button></div></div>`;
+ $('v81next').onclick=v81Lesson20;
 }
-function addTenApple(){
- const n=$('tenObjs').querySelectorAll('.obj').length;
- if(n<10){
-   $('tenObjs').innerHTML=grouped(n+1,'🍎');
-   $('tenCount').textContent=(n+1)+'개';
-   feedback.textContent=(n+1===10)?'🎉 10개가 되었어요! 5개와 5개를 합치면 10개예요.':'잘하고 있어요. 하나씩 세어 보세요.';
- }
+function v81Lesson20(){
+ body.innerHTML=`<div class="v81wrap"><div class="v81msg"><b>② 10개 묶음 2개 = 20개</b></div>${v81Bundles(2)}<div class="v81eq">10 + 10 = 20</div><div class="v81msg">10개 묶음이 2개니까 20개예요.</div><div class="choice"><button id="v81next">다음 →</button></div></div>`;
+ $('v81next').onclick=v81Lesson30;
 }
-function enableTouchTen(source,target){
- let selected=null;
- source.addEventListener('touchstart',e=>{
-   const el=e.target.closest('.tenApple');
-   if(el){selected=el;el.classList.add('dragging');}
+function v81Lesson30(){
+ body.innerHTML=`<div class="v81wrap"><div class="v81msg"><b>③ 10개 묶음 3개 = 30개</b></div>${v81Bundles(3)}<div class="v81eq">10 + 10 + 10 = 30</div><div class="v81msg">10개 묶음이 3개니까 30개예요.</div><div class="choice"><button id="v81next">직접 만들어 보기 →</button></div></div>`;
+ $('v81next').onclick=v81Practice;
+}
+function v81Practice(){
+ window.v81Target=[10,20,30][Math.floor(Math.random()*3)];window.v81Count=0;window.v81Attempts=0;window.v81Answered=false;
+ body.innerHTML=`<div class="v81wrap"><div class="question">🔟 10개 묶음 <b>${v81Target/10}개</b>를 만들어 보세요.</div><div class="v81msg">사과를 <b>누르고 끌어서</b> 위의 5칸 수판에 놓아 주세요.</div><div id="v81made">${v81Board(0,'🍎')}</div><div id="v81bundlebox"></div><div id="v81status" class="v81msg">현재 0개</div><div class="zone"><h3>🍎 사과</h3><div id="v81source" class="v81source"></div></div><div class="choice"><button id="v81check">완성했어요!</button></div></div>`;
+ const src=$('v81source');for(let i=0;i<v81Target;i++){const a=document.createElement('div');a.className='v81apple';a.textContent='🍎';a.dataset.id=i;src.appendChild(a);}
+ v81DragSetup();$('v81check').onclick=v81Check;
+}
+function v81DragSetup(){
+ const src=$('v81source'),target=$('v81made');let active=null,sx=0,sy=0;
+ src.querySelectorAll('.v81apple').forEach(el=>{
+  el.addEventListener('pointerdown',e=>{if(window.v81Answered)return;active=el;sx=e.clientX;sy=e.clientY;el.classList.add('dragging');try{el.setPointerCapture(e.pointerId)}catch(_){} });
+  el.addEventListener('pointerup',e=>{if(active!==el)return;el.classList.remove('dragging');const r=target.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)v81Move(el);active=null;});
+  el.addEventListener('pointercancel',()=>{if(active===el){el.classList.remove('dragging');active=null;}});
+ });
+}
+function v81Move(el){
+ if(window.v81Answered||window.v81Count>=window.v81Target||!el.parentNode)return;window.v81Count++;el.remove();let n=window.v81Count,b=Math.floor(n/10),r=n%10;$('v81made').innerHTML=v81Board(r,'🍎');$('v81bundlebox').innerHTML=b?v81Bundles(b):'';$('v81status').textContent=`현재 ${n}개`;
+ feedback.textContent=n%10===0?`🎉 10개가 모였어요! 10개 묶음 ${b}개예요.`:`좋아요! 사과 ${n}개예요.`;
+}
+function v81Check(){
+ let n=window.v81Count,t=window.v81Target;
+ if(n===t){window.v81Answered=true;answered=true;score++;record(true);let b=t/10;feedback.innerHTML=`🎉 <b>잘했어요!</b> 10개 묶음 ${b}개 = ${t}개예요.`;body.insertAdjacentHTML('beforeend',`<div class="resultPanel">${v81Bundles(b)}<div class="equation">10 × ${b} = ${t}</div><div class="explain">10개씩 묶어서 ${t}을 알 수 있어요.</div></div>`);nextBtn.style.display='inline-block';nextBtn.textContent='다음 문제 →';}
+ else{window.v81Attempts++;if(window.v81Attempts<3)feedback.innerHTML=`🌱 지금 ${n}개예요. ${t}개가 될 때까지 더 옮겨 보세요. (남은 기회 ${3-window.v81Attempts}번)`;else{window.v81Answered=true;answered=true;record(false);feedback.innerHTML=`💡 목표는 ${t}개예요. 10개씩 묶어서 생각해 보세요.`;nextBtn.style.display='inline-block';nextBtn.textContent='다음 문제 →';}}
+}
+ragging');}
  },{passive:true});
  source.addEventListener('touchend',e=>{
    if(!selected)return;
