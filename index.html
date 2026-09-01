@@ -60,23 +60,28 @@ h2{margin:4px 0 8px}.hint{color:#6f7d93;line-height:1.5;margin:0 0 16px}
 .equation{font-size:38px;font-weight:950;letter-spacing:2px;margin:12px 0}
 .resultObjects{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;font-size:35px}
 .arrow{font-size:30px;font-weight:900}
-</style>
 
-<style>
-.s2wrap{width:min(760px,94vw);margin:10px auto;box-sizing:border-box}
-.s2board{width:100%;padding:10px;border:3px solid #d9c99e;border-radius:22px;background:#fffaf0;box-sizing:border-box}
-.s2row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:6px;background:#fff;border-radius:14px}
-.s2row+.s2row{margin-top:6px}
-.s2cell{height:52px;display:flex;align-items:center;justify-content:center;font-size:35px}
-.s2bundleArea{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px}
-.s2bundle{width:min(310px,100%);padding:8px;border:3px solid #f0d36a;border-radius:20px;background:#fff;box-sizing:border-box}
-.s2bundleTitle{text-align:center;font-weight:900;margin-bottom:5px}
-.s2source{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:14px;background:#f5f7fb;border-radius:18px;min-height:70px}
-.s2apple{width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:35px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
-.s2apple.dragging{opacity:.45;transform:scale(1.12)}
-.s2drop{outline:4px dashed #e5c95a;outline-offset:-7px}
-.s2eq{text-align:center;font-size:36px;font-weight:950;margin:10px}
-.s2msg{text-align:center;font-size:19px;font-weight:800;margin:8px}
+.v8-board{max-width:760px;margin:14px auto;padding:12px;background:#fffaf0;border:3px solid #e5d5a7;border-radius:24px}
+.v8-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;padding:7px;background:#fff;border-radius:15px}
+.v8-row+.v8-row{margin-top:7px}
+.v8-cell{height:52px;display:flex;align-items:center;justify-content:center;font-size:34px}
+.v8-bundles{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:12px auto}
+.v8-bundle{width:min(330px,100%);padding:8px;background:#fff;border:3px solid #ffd84d;border-radius:20px}
+.v8-bundle-title{text-align:center;font-weight:900;margin:2px 0 5px}
+.v8-source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:14px;background:#f4f7fb;border-radius:18px}
+.v8-apple{width:54px;height:54px;display:flex;align-items:center;justify-content:center;font-size:36px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.v8-apple.dragging{opacity:.35;transform:scale(1.08)}
+.v8-eq{font-size:38px;font-weight:950;text-align:center;margin:12px}
+.v8-msg{text-align:center;font-size:19px;font-weight:900;line-height:1.55;margin:10px}
+.v8-lesson button{background:#ffd84d;border-radius:16px;padding:13px 22px;font-weight:900;font-size:18px;margin:5px}
+.v8-exchange{max-width:850px;margin:16px auto;padding:16px;background:#fff8d8;border:3px solid #ffd84d;border-radius:22px}
+.v8-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.v8-col{background:#fff;border-radius:18px;padding:10px;text-align:center}
+.v8-mini10{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:220px;margin:8px auto;padding:7px;background:#fff8d8;border:2px solid #ffd84d;border-radius:12px}
+.v8-mini10 span{font-size:26px;line-height:1.1}
+.v8-expanded{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:220px;margin:8px auto;padding:7px;background:#eef7ff;border:2px solid #b9d7ef;border-radius:12px}
+.v8-expanded span{font-size:26px;line-height:1.1}
+@media(max-width:600px){.v8-columns{grid-template-columns:1fr}.v8-cell{height:48px}}
 </style>
 </head>
 <body>
@@ -652,148 +657,249 @@ function checkSub(need,correct){
  }
 }
 
-let s2Target=10,s2Count=0,s2Attempts=0,s2Answered=false;
+let v8TenCount=0;
+let v8TenTarget=10;
+let v8TenAttempts=0;
+let v8TenAnswered=false;
 
-function s2Board(n,emoji='🍎'){
+function v8Board(n,emoji='🍎'){
   n=Math.max(0,Math.min(10,n));
-  const row=k=>Array.from({length:5},(_,i)=>`<div class="s2cell">${i<k?emoji:''}</div>`).join('');
-  return `<div class="s2board"><div class="s2row">${row(Math.min(5,n))}</div><div class="s2row">${row(Math.max(0,n-5))}</div></div>`;
+  let s='<div class="v8-board">';
+  for(let r=0;r<2;r++){
+    s+='<div class="v8-row">';
+    for(let c=0;c<5;c++){
+      const i=r*5+c;
+      s+=`<div class="v8-cell">${i<n?emoji:''}</div>`;
+    }
+    s+='</div>';
+  }
+  return s+'</div>';
 }
-function s2Bundle(){
-  return `<div class="s2bundle"><div class="s2bundleTitle">🔟 10개 묶음</div>${s2Board(10,'🍎')}</div>`;
+function v8TenBundle(){
+  return `<div class="v8-bundle"><div class="v8-bundle-title">🔟 10개 묶음</div>${v8Board(10,'🍎')}</div>`;
 }
-function s2Bundles(n){
-  return `<div class="s2bundleArea">${Array.from({length:n},()=>s2Bundle()).join('')}</div>`;
+function v8TenBundles(n){
+  return `<div class="v8-bundles">${Array.from({length:n},()=>v8TenBundle()).join('')}</div>`;
 }
 
 function renderTen(){
   title.textContent=names.ten;
-  hint.textContent='5개씩 한 줄로 보고, 10개 묶음이 몇 개인지 배워요.';
-  bar.style.width='0%';feedback.textContent='';nextBtn.style.display='none';
-  s2Answered=false;s2Attempts=0;
-  s2Concept(0);
+  hint.textContent='5개씩 한 줄로 보고, 10개 묶음이 몇 개인지 이해해 봐요.';
+  bar.style.width=(qIndex/questions.length*100)+'%';
+  feedback.textContent=''; nextBtn.style.display='none';
+  v8TenCount=0; v8TenAttempts=0; v8TenAnswered=false;
+  v8TenTarget=10;
+
+  body.innerHTML=`
+    <div class="v8-lesson">
+      <div class="question">① 5개 + 5개 = 10개</div>
+      ${v8Board(10,'🍎')}
+      <div class="v8-eq">5 + 5 = 10</div>
+      <div class="explain">5개가 있는 줄과 5개가 있는 줄을 합하면 <b>10개</b>예요.</div>
+      <div class="choice"><button onclick="v8TenConcept(2)">다음 →</button></div>
+    </div>`;
 }
 
-function s2Concept(step){
-  const lesson=[
-    ['5개를 살펴봐요',s2Board(5),'5','한 줄에 5개가 들어가요. 빈 공간도 함께 살펴봐요.'],
-    ['5개 + 5개 = 10',s2Board(10),'5 + 5 = 10','5개와 5개를 합하면 10개예요.'],
-    ['10개 묶음 2개 = 20',s2Bundles(2),'10 + 10 = 20','10개 묶음이 2개면 20개예요.'],
-    ['10개 묶음 3개 = 30',s2Bundles(3),'10 + 10 + 10 = 30','10개 묶음이 3개면 30개예요.']
-  ][step];
-  body.innerHTML=`<div class="question"><b>${step+1}. ${lesson[0]}</b></div>
-  <div class="s2wrap"><div class="teachingCard">${lesson[1]}<div class="s2eq">${lesson[2]}</div><div class="explain">${lesson[3]}</div></div></div>
-  <div class="choice"><button onclick="s2ConceptNext(${step})">${step<3?'다음 →':'직접 만들어 보기 →'}</button></div>`;
-}
-function s2ConceptNext(step){
-  if(step<3)s2Concept(step+1);else s2Practice();
+function v8TenConcept(step){
+  if(step===2){
+    body.innerHTML=`
+      <div class="v8-lesson">
+        <div class="question">② 10개 묶음 2개 = 20개</div>
+        ${v8TenBundles(2)}
+        <div class="v8-eq">10 + 10 = 20</div>
+        <div class="explain">10개 묶음이 <b>2개</b> 있으니 모두 <b>20개</b>예요.</div>
+        <div class="choice"><button onclick="v8TenConcept(3)">다음 →</button></div>
+      </div>`;
+  }else{
+    body.innerHTML=`
+      <div class="v8-lesson">
+        <div class="question">③ 10개 묶음 3개 = 30개</div>
+        ${v8TenBundles(3)}
+        <div class="v8-eq">10 + 10 + 10 = 30</div>
+        <div class="explain">10개 묶음이 <b>3개</b> 있으니 모두 <b>30개</b>예요.</div>
+        <div class="choice"><button onclick="v8TenPractice()">직접 만들어 보기 →</button></div>
+      </div>`;
+  }
 }
 
-function s2Practice(){
-  s2Target=[10,20,30][Math.floor(Math.random()*3)];
-  s2Count=0;s2Attempts=0;s2Answered=false;
-  body.innerHTML=`<div class="question">🔟 <b>10개 묶음 ${s2Target/10}개</b>를 만들어 보세요.</div>
-  <div class="s2wrap">
-    <div class="s2msg">🍎 사과를 <b>손가락으로 눌러 끌어서</b> 아래의 5칸 배경 수판으로 옮겨 주세요.</div>
-    <div id="s2Drop" class="s2drop">${s2Board(0)}</div>
-    <div id="s2Bundles"></div>
-    <div id="s2Status" class="s2msg">현재 0개</div>
-  </div>
-  <div class="zone"><h3>🍎 사과</h3>
-    <div id="s2Source" class="s2source">
-      ${Array.from({length:s2Target},(_,i)=>`<div class="s2apple" draggable="true" data-id="${i}">🍎</div>`).join('')}
+function v8TenPractice(){
+  v8TenTarget=[10,20,30][Math.floor(Math.random()*3)];
+  v8TenCount=0; v8TenAttempts=0; v8TenAnswered=false;
+
+  body.innerHTML=`
+    <div class="question">🔟 10개 묶음 <b>${v8TenTarget/10}개</b>를 만들어 보세요.</div>
+    <div class="v8-msg">🍎 사과를 <b>하나씩 끌어서</b> 위의 5칸 배경 수판으로 옮겨 주세요.</div>
+    <div id="v8Made">${v8Board(0,'🍎')}</div>
+    <div id="v8Bundles"></div>
+    <div id="v8Status" class="v8-msg">현재 0개</div>
+    <div class="zone">
+      <h3>🍎 옮길 사과</h3>
+      <div id="v8Source" class="v8-source">
+        ${Array.from({length:v8TenTarget},(_,i)=>`<div class="v8-apple" data-id="${i}">🍎</div>`).join('')}
+      </div>
     </div>
-  </div>
-  <div class="choice"><button onclick="s2Check()">완성했어요!</button></div>`;
-  s2SetupDrag();
+    <div class="choice"><button onclick="v8TenCheck()">완성했어요!</button></div>`;
+
+  v8InstallDrag();
 }
 
-function s2MoveApple(el){
-  if(!el||s2Answered||s2Count>=s2Target)return;
-  s2Count++;el.remove();
-  const bundles=Math.floor(s2Count/10),rest=s2Count%10;
-  $('s2Drop').innerHTML=s2Board(rest);
-  $('s2Bundles').innerHTML=bundles?s2Bundles(bundles):'';
-  $('s2Status').textContent=`현재 ${s2Count}개`;
-  feedback.textContent=(s2Count%10===0)
-    ? `🎉 10개가 모였어요! 10개 묶음 ${bundles}개예요.`
-    : `좋아요! 사과 ${s2Count}개를 옮겼어요.`;
-}
+function v8InstallDrag(){
+  const source=$('v8Source'), target=$('v8Made');
+  let active=null, startX=0, startY=0, moved=false;
 
-function s2SetupDrag(){
-  const source=$('s2Source'),drop=$('s2Drop');
-  if(!source||!drop)return;
-
-  source.querySelectorAll('.s2apple').forEach(el=>{
-    el.addEventListener('dragstart',e=>{
-      e.dataTransfer.effectAllowed='move';
-      e.dataTransfer.setData('text/plain',el.dataset.id);
-      el.classList.add('dragging');
-    });
-    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
-  });
-  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('s2drop');});
-  drop.addEventListener('dragleave',()=>drop.classList.remove('s2drop'));
-  drop.addEventListener('drop',e=>{
-    e.preventDefault();drop.classList.remove('s2drop');
-    const id=e.dataTransfer.getData('text/plain');
-    const el=source.querySelector(`.s2apple[data-id="${id}"]`);
-    if(el)s2MoveApple(el);
-  });
-
-  // iPad/Safari: real pointer tracking, not the unreliable HTML5 drag API.
-  let active=null,pid=null,startX=0,startY=0,ghost=null;
-  source.querySelectorAll('.s2apple').forEach(el=>{
+  source.querySelectorAll('.v8-apple').forEach(el=>{
     el.addEventListener('pointerdown',e=>{
-      if(s2Answered)return;
-      active=el;pid=e.pointerId;startX=e.clientX;startY=e.clientY;
+      if(v8TenAnswered)return;
+      active=el; startX=e.clientX; startY=e.clientY; moved=false;
       el.classList.add('dragging');
-      try{el.setPointerCapture(pid)}catch(_){}
-      ghost=el.cloneNode(true);
-      ghost.style.position='fixed';ghost.style.left=(e.clientX-26)+'px';ghost.style.top=(e.clientY-26)+'px';
-      ghost.style.zIndex='99999';ghost.style.pointerEvents='none';ghost.style.margin='0';
-      document.body.appendChild(ghost);
+      try{el.setPointerCapture(e.pointerId)}catch(_){}
     });
     el.addEventListener('pointermove',e=>{
       if(active!==el)return;
-      if(ghost){ghost.style.left=(e.clientX-26)+'px';ghost.style.top=(e.clientY-26)+'px';}
-      const r=drop.getBoundingClientRect();
-      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)drop.classList.add('s2drop');else drop.classList.remove('s2drop');
+      if(Math.hypot(e.clientX-startX,e.clientY-startY)>8)moved=true;
     });
     el.addEventListener('pointerup',e=>{
       if(active!==el)return;
-      const r=drop.getBoundingClientRect();
+      el.classList.remove('dragging');
+      const r=target.getBoundingClientRect();
       const inside=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
-      el.classList.remove('dragging');drop.classList.remove('s2drop');
-      if(ghost){ghost.remove();ghost=null;}
-      if(inside)s2MoveApple(el);
-      active=null;pid=null;
+      if(inside) v8MoveApple(el);
+      active=null;
     });
     el.addEventListener('pointercancel',()=>{
-      if(active===el){el.classList.remove('dragging');drop.classList.remove('s2drop');if(ghost){ghost.remove();ghost=null;}active=null;pid=null;}
+      if(active===el){el.classList.remove('dragging');active=null;}
     });
   });
 }
 
-function s2Check(){
-  if(s2Count===s2Target){
-    s2Answered=true;score++;
-    const b=s2Target/10;
-    feedback.innerHTML=`🎉 <b>잘했어요!</b> 10개 묶음 ${b}개 = ${s2Target}개예요.`;
-    body.insertAdjacentHTML('beforeend',`<div class="resultPanel">${s2Bundles(b)}<div class="s2eq">10 × ${b} = ${s2Target}</div><div class="explain">10개 묶음이 ${b}개 있으니 모두 ${s2Target}개예요.</div></div>`);
+function v8MoveApple(el){
+  if(v8TenAnswered||v8TenCount>=v8TenTarget||!el.parentNode)return;
+  v8TenCount++; el.remove();
+  const bundles=Math.floor(v8TenCount/10), rem=v8TenCount%10;
+  $('v8Made').innerHTML=v8Board(rem,'🍎');
+  $('v8Bundles').innerHTML=bundles?v8TenBundles(bundles):'';
+  $('v8Status').textContent=`현재 ${v8TenCount}개`;
+  feedback.textContent=(v8TenCount%10===0)
+    ? `🎉 10개가 모였어요! 10개 묶음 ${bundles}개가 되었어요.`
+    : `좋아요! 사과 ${v8TenCount}개예요.`;
+}
+
+function v8TenCheck(){
+  if(v8TenCount===v8TenTarget){
+    v8TenAnswered=true;
+    score++;
+    stats.ten??={c:0,t:0}; stats.ten.t++; stats.ten.c++;
+    localStorage.setItem('mathV6Stats',JSON.stringify(stats));
+    const b=v8TenTarget/10;
+    feedback.innerHTML=`🎉 <b>잘했어요!</b> 10개 묶음 ${b}개는 ${v8TenTarget}개예요.`;
+    body.insertAdjacentHTML('beforeend',`
+      <div class="resultPanel">
+        ${v8TenBundles(b)}
+        <div class="equation">10 × ${b} = ${v8TenTarget}</div>
+        <div class="explain">10개씩 묶어서 생각하면 <b>${v8TenTarget}</b>을 쉽게 알 수 있어요.</div>
+      </div>`);
     nextBtn.style.display='inline-block';
     nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
   }else{
-    s2Attempts++;
-    if(s2Attempts<3){
-      feedback.innerHTML=`🌱 지금은 <b>${s2Count}개</b>예요. ${s2Target}개가 될 때까지 사과를 더 옮겨 보세요. (남은 기회 ${3-s2Attempts}번)`;
+    v8TenAttempts++;
+    if(v8TenAttempts<3){
+      feedback.innerHTML=`🌱 지금은 <b>${v8TenCount}개</b>예요. ${v8TenTarget}개까지 더 옮겨 보세요. (남은 기회 ${3-v8TenAttempts}번)`;
     }else{
-      s2Answered=true;
-      feedback.innerHTML=`💡 10개씩 묶어 생각해 봐요. 정답은 ${s2Target}개예요.`;
+      v8TenAnswered=true;
+      stats.ten??={c:0,t:0}; stats.ten.t++;
+      localStorage.setItem('mathV6Stats',JSON.stringify(stats));
+      feedback.innerHTML=`💡 10개씩 묶어 생각해 보세요. 이번 목표는 <b>${v8TenTarget}개</b>예요.`;
       nextBtn.style.display='inline-block';
       nextBtn.textContent=qIndex===questions.length-1?'학습 결과 보기 →':'다음 문제 →';
     }
   }
+}
+
+function v8ExchangeVisual(n,emoji){
+  const t=Math.floor(n/10),o=n%10;
+  return `<div class="v8-columns">
+    <div class="v8-col"><b>${t}개의 10개 묶음</b>${Array.from({length:t},()=>`<div class="v8-mini10">${Array.from({length:10},()=>`<span>${emoji}</span>`).join('')}</div>`).join('')}</div>
+    <div class="v8-col"><b>${o}개의 낱개</b><div class="v8-expanded">${Array.from({length:o},()=>`<span>${emoji}</span>`).join('')}</div></div>
+  </div>`;
+}
+
+function renderQuestion(){
+  pickTheme();attempts=0;answered=false;wrongChoices=new Set();
+  title.textContent=names[mode];
+  hint.textContent={
+    count:'그림의 개수를 세고 맞는 숫자를 골라보세요.',
+    add:'두 종류의 사물을 각각 세고, 하나씩 끌어 더해 보는 경험을 해보세요.',
+    sub:'사물을 하나씩 끌어 옮기면서 몇 개가 없어지는지 생각해 보세요.',
+    place:'십의 자리와 일의 자리를 10개 묶음과 낱개로 살펴보세요.',
+    add2:'십의 묶음과 낱개를 따로 생각하며 계산해 보세요.',
+    sub2:'십의 묶음과 낱개를 따로 생각하며 계산해 보세요.',
+    carry:'일의 자리에서 10개가 모이면 한 묶음으로 바꿔요.',
+    borrow:'10개 묶음 하나를 풀어 낱개 10개로 바꿔 보는 것이 핵심이에요.'
+  }[mode];
+  bar.style.width=(qIndex/questions.length*100)+'%';feedback.textContent='';nextBtn.style.display='none';
+  const q=questions[qIndex];let b='';
+  if(mode==='count'){const n=q[0];b=`<div class="question">몇 개일까요?</div>${grouped(n,theme[0].e)}${answerButtons(n)}`;}
+  else if(mode==='add'){
+    const[a,c]=q,n=a+c;
+    b=`${foodLabel()}<div class="question">${a} + ${c} = ?</div>
+    <div class="dragBoard"><div class="zone" id="addA"><h3>${theme[0].e} ${a}개</h3>${Array.from({length:a},(_,k)=>`<div class="dragitem" draggable="true" data-kind="a" data-id="${k}">${theme[0].e}</div>`).join('')}</div>
+    <div class="zone" id="addB"><h3>${theme[1].e} ${c}개</h3>${Array.from({length:c},(_,k)=>`<div class="dragitem" draggable="true" data-kind="b" data-id="${k}">${theme[1].e}</div>`).join('')}</div></div>
+    <div class="explain">사물은 항상 <b>5개씩 한 줄</b>로 보여요. 하나씩 끌어 합치고, 5개 + 5개가 되면 <b>10개</b>라고 생각해요.</div>
+    <div class="zone" id="addResult"><h3>➕ 합친 곳</h3><div id="addMoved" style="display:grid;grid-template-columns:repeat(5,56px);justify-content:center;gap:5px"></div></div>
+    <div class="choice"><button onclick="checkAdd(${n})">다 옮겼어요!</button></div>`;
+  }
+  else if(mode==='sub'){
+    const[a,c]=q,n=a-c;
+    b=`<div class="question">${a} - ${c} = ?</div>
+    <div class="dragBoard"><div class="zone" id="subSource"><h3>${theme[0].e} ${a}개</h3>${Array.from({length:a},(_,k)=>`<div class="dragitem" draggable="true" data-id="${k}">${theme[0].e}</div>`).join('')}</div><div class="zone" id="subGone"><h3>💨 없어진 곳</h3></div></div>
+    <div class="explain">${c}개를 <b>하나씩 끌어</b> 없애 보세요.</div><div class="choice"><button onclick="checkSub(${c},${n})">다 옮겼어요!</button></div>`;
+  }
+  else if(mode==='place'){
+    const n=q[0],t=Math.floor(n/10),o=n%10;
+    b=`<div class="question">${n}은 몇 십과 몇 일까요?</div>${blocks(n)}<div class="explain">${n} = <b>${t*10} + ${o}</b></div>${answerButtons(n)}`;
+  }
+  else if(mode==='add2'||mode==='sub2'){
+    const[a,c]=q,n=mode==='add2'?a+c:a-c,op=mode==='add2'?'+':'−';
+    b=`${foodLabel()}<div class="question">${a} ${op} ${c} = ?</div>${blocks(a,theme[0].e)}<div style="font-size:30px;font-weight:900">${op}</div>${blocks(c,theme[1].e)}<div class="explain">10개씩 묶음과 낱개를 따로 보면서 계산해보세요.</div>${answerButtons(n)}`;
+  }
+  else if(mode==='carry'){
+    const[a,c]=q,n=a+c,ao=a%10,co=c%10,sum=ao+co;
+    b=`${foodLabel()}<div class="question">${a} + ${c} = ?</div>
+    ${blocks(a,theme[0].e)}<div style="font-size:30px;font-weight:900">＋</div>${blocks(c,theme[1].e)}
+    <div class="v8-exchange">
+      <div class="v8-msg">🔟 받아올림은 <b>일의 자리에서 10개가 모이는 순간</b>을 보는 것이 중요해요.</div>
+      <div class="v8-columns">
+        <div class="v8-col"><b>${theme[0].n}의 일의 자리 ${ao}개</b>${v8Board(ao,theme[0].e)}</div>
+        <div class="v8-col"><b>${theme[1].n}의 일의 자리 ${co}개</b>${v8Board(co,theme[1].e)}</div>
+      </div>
+      <div class="v8-eq">${ao} + ${co} = ${sum}</div>
+      ${sum>=10?`<div class="v8-msg">🎉 ${sum}개가 되었어요. 그중 <b>10개를 하나의 10개 묶음</b>으로 바꿔요.</div>${v8ExchangeVisual(10,theme[0].e)}<div class="v8-eq">10개 묶음 1개 = 사물 10개</div>`:''}
+      <div class="explain">10개 묶음 1개는 사물 <b>10개</b>와 같은 수예요. 그래서 받아올림에서는 10개를 묶어서 십의 자리로 올려요.</div>
+    </div>${answerButtons(n)}`;
+  }
+  else if(mode==='borrow'){
+    const[a,c]=q,n=a-c,ao=a%10,co=c%10,borrowed=ao<co;
+    b=`${foodLabel()}<div class="question">${a} − ${c} = ?</div>
+    ${blocks(a,theme[0].e)}<div style="font-size:30px;font-weight:900">−</div>${blocks(c,theme[1].e)}
+    <div class="v8-exchange">
+      <div class="v8-msg">🔟 받아내림에서는 <b>10개 묶음 1개를 풀어서 사물 10개</b>로 바꾸는 과정을 봐요.</div>
+      <div class="v8-columns">
+        <div class="v8-col"><b>빼지는 수 ${a}의 일의 자리 ${ao}개</b>${v8Board(ao,theme[0].e)}</div>
+        <div class="v8-col"><b>빼는 수 ${c}의 일의 자리 ${co}개</b>${v8Board(co,theme[1].e)}</div>
+      </div>
+      ${borrowed?`
+        <div class="v8-msg">⚠️ ${ao}개로는 ${co}개를 뺄 수 없어요.</div>
+        <div class="v8-msg">그래서 십의 자리의 <b>10개 묶음 1개</b>를 풀어요.</div>
+        <div class="v8-columns">
+          <div class="v8-col"><b>10개 묶음 1개</b>${v8TenBundle()}</div>
+          <div class="v8-col"><b>풀어서 낱개 10개</b>${v8Board(10,theme[0].e)}</div>
+        </div>
+        <div class="v8-eq">10개 묶음 1개 = 사물 10개</div>
+        <div class="explain">이제 일의 자리에는 원래 ${ao}개 + 새로 온 10개 = <b>${ao+10}개</b>가 있어요. 여기서 ${co}개를 뺄 수 있어요.</div>
+      `:`<div class="explain">${ao}개로 ${co}개를 바로 뺄 수 있어요. 이번 문제는 받아내림이 필요하지 않아요.</div>`}
+    </div>${answerButtons(n)}`;
+  }
+  body.innerHTML=b;setupDrag();
 }
 function nextQuestion(){
  qIndex++;
