@@ -705,5 +705,32 @@ function renderStats(){
 }
 function resetStats(){if(confirm('학습 기록을 초기화할까요?')){stats={};localStorage.removeItem('mathV6Stats');renderStats()}}
 </script>
-</body>
+<script>
+(function(){
+var S={step:0,target:10,count:0,attempts:0,answered:false,root:null};
+function txt(e){return(e&&e.textContent||'').replace(/\s+/g,' ').trim();}
+function is2(e){return e&&e.tagName==='BUTTON'&&(/10\s*의\s*개념/.test(txt(e))||/^2\s*단계/.test(txt(e)));}
+function root(){return document.getElementById('body')||document.querySelector('main')||document.body;}
+function board(n,em){em=em||'🍎';n=Math.max(0,Math.min(10,n));var s='<div class="v82-board">';for(var r=0;r<2;r++){s+='<div class="v82-row">';for(var c=0;c<5;c++){var i=r*5+c;s+='<div class="v82-cell">'+(i<n?em:'')+'</div>';}s+='</div>';}return s+'</div>';}
+function bundles(n){var s='<div class="v82-bundles">';for(var i=0;i<n;i++)s+='<div class="v82-bundle"><div class="v82-bundle-title">🔟 10개 묶음</div>'+board(10)+'</div>';return s+'</div>';}
+function enter(){S.root=root();S.step=0;concept();}
+function concept(){var d=[
+['① 5개 + 5개 = 10개',board(10),'5 + 5 = 10','5개와 5개를 합하면 10개예요.'],
+['② 10개 묶음 2개 = 20개',bundles(2),'10 + 10 = 20','10개 묶음이 2개니까 모두 20개예요.'],
+['③ 10개 묶음 3개 = 30개',bundles(3),'10 + 10 + 10 = 30','10개 묶음이 3개니까 모두 30개예요.']][S.step];
+S.root.innerHTML='<div class="v82-wrap"><div class="v82-card"><div class="question"><b>'+d[0]+'</b></div>'+d[1]+'<div class="v82-eq">'+d[2]+'</div><div class="v82-msg">'+d[3]+'</div><button class="v82-btn" id="v82next">'+(S.step<2?'다음 →':'직접 만들어 보기 →')+'</button><button class="v82-btn" id="v82menu">메뉴로</button></div></div>';
+document.getElementById('v82next').onclick=function(){if(S.step<2){S.step++;concept();}else practice();};document.getElementById('v82menu').onclick=function(){location.reload();};}
+function practice(){S.target=[10,20,30][Math.floor(Math.random()*3)];S.count=0;S.attempts=0;S.answered=false;
+S.root.innerHTML='<div class="v82-wrap"><div class="v82-card"><div class="question"><b>🔟 10개 묶음 '+(S.target/10)+'개를 만들어 보세요.</b></div><div class="v82-msg">🍎 사과를 <b>하나씩 손가락으로 끌어서</b> 5칸 배경 수판에 옮겨 주세요.</div><div id="v82made">'+board(0)+'</div><div id="v82bundles"></div><div class="v82-feedback" id="v82status">현재 0개</div><div class="v82-source" id="v82source"></div><button class="v82-btn" id="v82check">완성했어요!</button><button class="v82-btn" id="v82menu">메뉴로</button></div></div>';
+var src=document.getElementById('v82source');for(var i=0;i<S.target;i++){var a=document.createElement('div');a.className='v82-apple';a.textContent='🍎';src.appendChild(a);drag(a);}
+document.getElementById('v82check').onclick=check;document.getElementById('v82menu').onclick=function(){location.reload();};}
+function drag(a){var down=false;a.addEventListener('pointerdown',function(e){if(S.answered)return;down=true;a.setPointerCapture&&a.setPointerCapture(e.pointerId);a.style.opacity='.4';});
+a.addEventListener('pointerup',function(e){if(!down)return;down=false;a.style.opacity='';var r=document.getElementById('v82made').getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)move(a);});
+a.addEventListener('pointercancel',function(){down=false;a.style.opacity='';});}
+function move(a){if(S.answered||S.count>=S.target||!a.parentNode)return;S.count++;a.remove();var b=Math.floor(S.count/10),r=S.count%10;document.getElementById('v82made').innerHTML=board(r);document.getElementById('v82bundles').innerHTML=b?bundles(b):'';document.getElementById('v82status').textContent='현재 '+S.count+'개';}
+function check(){var st=document.getElementById('v82status');if(S.count===S.target){S.answered=true;st.innerHTML='🎉 <b>잘했어요!</b> 10개 묶음 '+(S.target/10)+'개 = '+S.target+'개';}else{S.attempts++;st.innerHTML=S.attempts<3?'🌱 지금은 <b>'+S.count+'개</b>예요. 사과를 더 옮겨 보세요.':'💡 목표는 <b>'+S.target+'개</b>예요.';}}
+document.addEventListener('click',function(e){var el=e.target;while(el&&el!==document&&el.tagName!=='BUTTON')el=el.parentElement;if(is2(el)){e.preventDefault();e.stopImmediatePropagation();enter();}},true);
+var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+})();
+</script></body>
 </html>
