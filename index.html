@@ -10,9 +10,9 @@
 .card{background:#fff;border-radius:24px;padding:16px;margin-top:12px;box-shadow:0 3px 14px #0001}.menu{display:grid;gap:10px}.menu button{border:0;border-radius:18px;padding:17px;background:#fff;font-size:20px;font-weight:900;box-shadow:0 2px 9px #0001}
 .back,.btn{border:0;border-radius:14px;padding:11px 16px;font-weight:900}.back{background:#eee}.primary{background:#ffe56b}.secondary{background:#e9edf2}.actions{text-align:center;margin:12px 0}
 .msg{text-align:center;font-size:19px;font-weight:800;line-height:1.5}.eq{text-align:center;font-size:35px;font-weight:950;margin:10px}.status{text-align:center;min-height:32px;font-size:19px;font-weight:900;margin:9px}
-.board{background:#fff8df;border:3px solid #e7d59b;border-radius:18px;padding:8px;max-width:600px;margin:10px auto}.row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.row+.row{margin-top:7px}.cell{height:45px;background:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.board{background:#fff8df;border:3px solid #e7d59b;border-radius:18px;padding:8px;max-width:600px;margin:10px auto}.row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.row+.row{margin-top:7px}.cell{height:45px;touch-action:none;background:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:30px}
 .bundleArea{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:9px;max-width:700px;margin:10px auto}.bundle{background:#fff;border:3px solid #f0cf45;border-radius:17px;padding:7px}.bundleTitle{text-align:center;font-weight:950}.bundle .board{border:0;margin:4px auto;padding:3px}
-.source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#f0f3f7;padding:13px;border-radius:18px}.drag10{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:27px;font-weight:950;touch-action:none}.drag10 small{display:block;font-size:10px}
+.source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#f0f3f7;padding:13px;border-radius:18px}.object{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:30px;touch-action:none;user-select:none;-webkit-user-select:none}.drag10{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:27px;font-weight:950;touch-action:none}.drag10 small{display:block;font-size:10px}
 .columns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.col{background:#fff8df;border-radius:18px;padding:8px}.col h3{text-align:center;margin:3px}.answerGrid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.ans{min-width:60px;border:0;border-radius:15px;background:#edf1f5;padding:12px;font-size:22px;font-weight:950}.wrong{background:#ffc8c8!important;text-decoration:line-through}.right{background:#bdebc6!important}
 .note{background:#fff8df;border-radius:16px;padding:11px;font-weight:800;line-height:1.5;margin-top:10px}.tenIcon{font-size:27px}
 @media(max-width:520px){.top h1{font-size:25px}.cell{height:41px;font-size:27px}.drag10{width:50px;height:50px;font-size:23px}.columns{grid-template-columns:1fr}.ans{min-width:55px}}
@@ -139,7 +139,7 @@ function answersFor(correct,next){
 }
 /* ③ 덧셈: physically drag objects from each group into the common board */
 function addStage(){
- let a=1+Math.floor(Math.random()*8),b=1+Math.floor(Math.random()*8);
+ let a=1+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*7);
  renderAdd(a,b);
 }
 function renderAdd(a,b){
@@ -149,7 +149,7 @@ function renderAdd(a,b){
  '<div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="srcA" class="source">'+objects(a,'🍎','a')+'</div></div>'+
  '<div class="col"><h3>🍐 '+b+'개</h3><div id="srcB" class="source">'+objects(b,'🍐','b')+'</div></div></div>'+
  '<div class="explain">🍎과 🍐를 하나씩 끌어 가운데 수판으로 모아 보세요.</div>'+
- '<div id="dest" class="board"><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div></div>'+
+ '<div id="dest" class="board"><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div></div>'+
  '<div id="st" class="status">옮긴 수: <b>0</b>개</div><div class="actions">'+B('checkAdd','다 옮겼어요!','primary')+'</div></div></div>';
  back.onclick=menu;
  document.querySelectorAll('.object').forEach(x=>dragObject(x,'dest',()=>updateAdd(a,b)));
@@ -157,11 +157,64 @@ function renderAdd(a,b){
 }
 function objects(n,e,group){let s='';for(let i=0;i<n;i++)s+='<button class="object" data-group="'+group+'">'+e+'</button>';return s}
 function dragObject(el,destId,update){
- let down=false;el.addEventListener('pointerdown',e=>{down=true;el.setPointerCapture?.(e.pointerId);el.style.opacity='.4'});
- el.addEventListener('pointerup',e=>{if(!down)return;down=false;el.style.opacity='';let d=document.getElementById(destId).getBoundingClientRect();
-  if(e.clientX>=d.left&&e.clientX<=d.right&&e.clientY>=d.top&&e.clientY<=d.bottom){el.remove();let n=document.querySelectorAll('#'+destId+' .filled').length;let cell=document.querySelectorAll('#'+destId+' .cell:not(.filled)')[0];if(cell){cell.textContent=el.textContent;cell.classList.add('filled')}update(n+1)}
- });el.addEventListener('pointercancel',()=>{down=false;el.style.opacity=''})
+ let dragging=false, ghost=null, ox=0, oy=0;
+ const move=e=>{
+  if(!dragging)return;
+  e.preventDefault();
+  const t=e.touches?e.touches[0]:e;
+  ghost.style.left=(t.clientX-ox)+'px';
+  ghost.style.top=(t.clientY-oy)+'px';
+ };
+ const end=e=>{
+  if(!dragging)return;
+  e.preventDefault();
+  dragging=false;
+  document.removeEventListener('pointermove',move);
+  document.removeEventListener('pointerup',end);
+  document.removeEventListener('touchmove',move,{passive:false});
+  document.removeEventListener('touchend',end);
+  const t=e.changedTouches?e.changedTouches[0]:e;
+  const d=document.getElementById(destId).getBoundingClientRect();
+  const inside=t.clientX>=d.left&&t.clientX<=d.right&&t.clientY>=d.top&&t.clientY<=d.bottom;
+  if(inside){
+    const cell=document.querySelector('#'+destId+' .cell:not(.filled)');
+    if(cell){
+      cell.textContent=el.textContent;
+      cell.classList.add('filled');
+      el.remove();
+      update();
+    }
+  }
+  if(ghost)ghost.remove();
+ };
+ const begin=e=>{
+  if(dragging)return;
+  e.preventDefault();
+  dragging=true;
+  const t=e.touches?e.touches[0]:e;
+  const r=el.getBoundingClientRect();
+  ox=t.clientX-r.left; oy=t.clientY-r.top;
+  ghost=el.cloneNode(true);
+  ghost.style.position='fixed';
+  ghost.style.zIndex='9999';
+  ghost.style.pointerEvents='none';
+  ghost.style.margin='0';
+  ghost.style.width=r.width+'px';
+  ghost.style.height=r.height+'px';
+  ghost.style.left=(t.clientX-ox)+'px';
+  ghost.style.top=(t.clientY-oy)+'px';
+  ghost.style.opacity='.85';
+  document.body.appendChild(ghost);
+  document.addEventListener('pointermove',move,{passive:false});
+  document.addEventListener('pointerup',end,{passive:false});
+  document.addEventListener('touchmove',move,{passive:false});
+  document.addEventListener('touchend',end,{passive:false});
+ };
+ el.style.touchAction='none';
+ el.addEventListener('pointerdown',begin,{passive:false});
+ el.addEventListener('touchstart',begin,{passive:false});
 }
+
 function updateAdd(a,b){let n=document.querySelectorAll('#dest .filled').length;document.getElementById('st').innerHTML='옮긴 수: <b>'+n+'</b>개　→　목표 '+(a+b)+'개'}
 
 /* ④ 뺄셈: drag objects from the board to the outside/removal area */
