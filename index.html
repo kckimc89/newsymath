@@ -2,287 +2,81 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>수학놀이터 V10</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>수학놀이터 V14</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f6f8fb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}button{font:inherit}
-.app{max-width:850px;margin:auto;padding:14px 12px 45px}.top{background:#ffe56b;border-radius:24px;padding:16px;text-align:center}.top h1{margin:0;font-size:29px}.sub{font-weight:700;margin-top:5px}
-.card{background:#fff;border-radius:24px;padding:16px;margin-top:12px;box-shadow:0 3px 14px #0001}.menu{display:grid;gap:10px}.menu button{border:0;border-radius:18px;padding:17px;background:#fff;font-size:20px;font-weight:900;box-shadow:0 2px 9px #0001}
+*{box-sizing:border-box}html,body{margin:0;padding:0;overscroll-behavior:none}body{background:#f6f8fb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}
+button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px;margin:auto;padding:14px 12px 45px}.top{background:#ffe56b;border-radius:24px;padding:16px;text-align:center}.top h1{margin:0;font-size:29px}.sub{font-weight:700;margin-top:5px}.card{background:#fff;border-radius:24px;padding:16px;margin-top:12px;box-shadow:0 3px 14px #0001}
+.menu{display:grid;gap:10px}.menu button{border:0;border-radius:18px;padding:17px;background:#fff;font-size:20px;font-weight:900;box-shadow:0 2px 9px #0001}
 .back,.btn{border:0;border-radius:14px;padding:11px 16px;font-weight:900}.back{background:#eee}.primary{background:#ffe56b}.secondary{background:#e9edf2}.actions{text-align:center;margin:12px 0}
-.msg{text-align:center;font-size:19px;font-weight:800;line-height:1.5}.eq{text-align:center;font-size:35px;font-weight:950;margin:10px}.status{text-align:center;min-height:32px;font-size:19px;font-weight:900;margin:9px}
-.board{background:#fff8df;border:3px solid #e7d59b;border-radius:18px;padding:8px;max-width:600px;margin:10px auto}.row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.row+.row{margin-top:7px}.cell{height:45px;touch-action:none;background:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:30px}
-.bundleArea{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:9px;max-width:700px;margin:10px auto}.bundle{background:#fff;border:3px solid #f0cf45;border-radius:17px;padding:7px}.bundleTitle{text-align:center;font-weight:950}.bundle .board{border:0;margin:4px auto;padding:3px}
-.source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#f0f3f7;padding:13px;border-radius:18px}.object{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:30px;touch-action:none;user-select:none;-webkit-user-select:none}.drag10{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:27px;font-weight:950;touch-action:none}.drag10 small{display:block;font-size:10px}
-.columns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.col{background:#fff8df;border-radius:18px;padding:8px}.col h3{text-align:center;margin:3px}.answerGrid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.ans{min-width:60px;border:0;border-radius:15px;background:#edf1f5;padding:12px;font-size:22px;font-weight:950}.wrong{background:#ffc8c8!important;text-decoration:line-through}.right{background:#bdebc6!important}
-.note{background:#fff8df;border-radius:16px;padding:11px;font-weight:800;line-height:1.5;margin-top:10px}.tenIcon{font-size:27px}
-@media(max-width:520px){.top h1{font-size:25px}.cell{height:41px;font-size:27px}.drag10{width:50px;height:50px;font-size:23px}.columns{grid-template-columns:1fr}.ans{min-width:55px}}
+.msg,.explain,.notice{text-align:center;font-size:18px;font-weight:800;line-height:1.5;margin:9px 0}.eq{text-align:center;font-size:35px;font-weight:950;margin:10px}.status{text-align:center;min-height:32px;font-size:18px;font-weight:900;margin:9px}
+.board{background:#fff8df;border:3px solid #e7d59b;border-radius:18px;padding:8px;max-width:650px;margin:10px auto}.row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.row+.row{margin-top:7px}.cell{height:48px;background:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:30px}.cell.filled{background:#fffdf4}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.col{background:#fff8df;border-radius:18px;padding:8px}.col h3{text-align:center;margin:3px}
+.object{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:30px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#f0f3f7;padding:13px;border-radius:18px;min-height:80px;touch-action:none}
+.dropTarget{outline:4px dashed #e7d15a;outline-offset:-7px}.ghost{position:fixed;z-index:99999;pointer-events:none;margin:0;transform:scale(1.08);box-shadow:0 6px 18px #0003}
+.answerGrid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.ans{min-width:60px;border:0;border-radius:15px;background:#edf1f5;padding:12px;font-size:22px;font-weight:950}.wrong{background:#ffc8c8!important;text-decoration:line-through}.right{background:#bdebc6!important}
+.note{background:#fff8df;border-radius:16px;padding:11px;font-weight:800;line-height:1.5;margin-top:10px}
+@media(max-width:520px){.top h1{font-size:25px}.cell{height:43px}.object{width:52px;height:52px;font-size:28px}.columns{grid-template-columns:1fr}.ans{min-width:55px}}
 </style>
 </head>
 <body><div id="app"></div>
 <script>
-(function(){
 'use strict';
 const app=document.getElementById('app');
 let G={last:0};
 
-function board(n,e='🍎'){n=Math.max(0,Math.min(10,n));let s='<div class="board">';for(let r=0;r<2;r++){s+='<div class="row">';for(let c=0;c<5;c++){let i=r*5+c;s+='<div class="cell">'+(i<n?e:'')+'</div>'}s+='</div>'}return s+'</div>'}
-function bundle(e='🍎'){return '<div class="bundle"><div class="bundleTitle">🔟 10개 묶음</div>'+board(10,e)+'</div>'}
-function bundles(n,e='🍎'){let s='<div class="bundleArea">';for(let i=0;i<n;i++)s+=bundle(e);return s+'</div>'}
 function B(id,text,cl='secondary'){return '<button id="'+id+'" class="btn '+cl+'">'+text+'</button>'}
+function board(n,e='🍎',rows=2){n=Math.max(0,n);let s='<div class="board">';for(let r=0;r<rows;r++){s+='<div class="row">';for(let c=0;c<5;c++){let i=r*5+c;s+='<div class="cell">'+(i<n?e:'')+'</div>'}s+='</div>'}return s+'</div>'}
+function bundle(e='🍎'){return '<div class="note" style="font-size:25px">🔟 10개 묶음</div>'+board(10,e)}
+function bundles(n,e='🍎'){let s='<div class="columns">';for(let i=0;i<n;i++)s+='<div class="col">'+bundle(e)+'</div>';return s+'</div>'}
+
 function menu(){
- app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
- '<button id="m1">① 수 세기</button><button id="m2">② 🔟 10의 개념</button><button id="m3">③ 덧셈</button><button id="m4">④ 뺄셈</button><button id="m5">⑤ 받아올림</button><button id="m6">⑥ 받아내림</button></div></div></div>';
- document.getElementById('m1').onclick=countStage;document.getElementById('m2').onclick=tenStage;document.getElementById('m3').onclick=addStage;document.getElementById('m4').onclick=subStage;document.getElementById('m5').onclick=carryStage;document.getElementById('m6').onclick=borrowStage;
+app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터 V14</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
+'<button id="m1">① 수 세기</button><button id="m2">② 🔟 10의 개념</button><button id="m3">③ 덧셈</button><button id="m4">④ 뺄셈</button><button id="m5">⑤ 받아올림</button><button id="m6">⑥ 받아내림</button></div></div></div>';
+m1.onclick=countStage;m2.onclick=tenStage;m3.onclick=addStage;m4.onclick=subStage;m5.onclick=carryStage;m6.onclick=borrowStage;
 }
+
+/* robust iPad drag engine: touch-only, no native HTML5 drag */
+function makeDraggable(el,onDrop){
+let sx=0,sy=0,ghost=null,moved=false;
+const cleanup=()=>{document.removeEventListener('touchmove',move,{passive:false});document.removeEventListener('touchend',end,{passive:false});document.removeEventListener('touchcancel',cancel,{passive:false});if(ghost){ghost.remove();ghost=null}document.querySelectorAll('.dropTarget').forEach(x=>x.classList.remove('dropTarget'))};
+const move=e=>{e.preventDefault();let t=e.touches[0];if(!ghost)return;ghost.style.left=(t.clientX-sx)+'px';ghost.style.top=(t.clientY-sy)+'px';document.querySelectorAll('.dropTarget').forEach(x=>x.classList.remove('dropTarget'));let d=document.elementFromPoint(t.clientX,t.clientY);let target=d&&d.closest('[data-drop="yes"]');if(target)target.classList.add('dropTarget');moved=true};
+const end=e=>{e.preventDefault();let t=e.changedTouches[0],d=document.elementFromPoint(t.clientX,t.clientY),target=d&&d.closest('[data-drop="yes"]');cleanup();if(target)onDrop(target)};
+const cancel=e=>{e.preventDefault();cleanup()};
+el.addEventListener('touchstart',e=>{
+e.preventDefault();let t=e.touches[0],r=el.getBoundingClientRect();sx=t.clientX-r.left;sy=t.clientY-r.top;moved=false;
+ghost=el.cloneNode(true);ghost.className+=' ghost';ghost.style.width=r.width+'px';ghost.style.height=r.height+'px';ghost.style.left=(t.clientX-sx)+'px';ghost.style.top=(t.clientY-sy)+'px';document.body.appendChild(ghost);
+document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',end,{passive:false});document.addEventListener('touchcancel',cancel,{passive:false});
+},{passive:false});
+}
+
 /* ① */
-function countStage(){let n=1+Math.floor(Math.random()*9);app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">① 몇 개인지 세어 보세요</h2><div class="source">'+Array.from({length:n},(_,i)=>'<span style="font-size:38px">'+['🍎','🍐','🍊','🍓'][i%4]+'</span>').join('')+'</div><div class="eq">몇 개일까요?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;answersFor(n,()=>countStage)}
+function countStage(){let n=1+Math.floor(Math.random()*9);app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">① 몇 개인지 세어 보세요</h2><div class="source">'+Array.from({length:n},(_,i)=>'<span style="font-size:38px">'+['🍎','🍐','🍊','🍓'][i%4]+'</span>').join('')+'</div><div class="eq">몇 개일까요?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;numericAnswers(n,()=>{st.innerHTML='🎉 '+n+'개예요!';setTimeout(()=>retry(countStage),800)})}
+
 /* ② */
-function tenStage(){lesson(0)}
-function lesson(i){
- let d=[
- ['5개 + 5개 = 10개',board(10),'5칸씩 두 줄을 보면 10개를 한눈에 알 수 있어요.'],
- ['🔟 1개 = 10개',bundle(),'사물 10개를 하나의 묶음으로 생각해요.'],
- ['🔟 2개 = 20개',bundles(2),'10개 묶음 2개니까 20개예요.'],
- ['🔟 3개 = 30개',bundles(3),'10개 묶음 3개니까 30개예요.'],
- ['🔟 10개 = 100개',bundles(10),'10개 묶음 10개니까 100개예요.']
- ][i];
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+d[0]+'</h2>'+d[1]+'<div class="msg">'+d[2]+'</div><div class="actions">'+B('next',i<4?'다음 →':'직접 만들어 보기 →','primary')+'</div></div></div>';back.onclick=menu;next.onclick=()=>i<4?lesson(i+1):bundlePractice();
-}
-function bundlePractice(){
- let nums=[10,20,30,40,50,60,70,80,90,100],p=nums.filter(n=>n!==G.last);
- let target=p[Math.floor(Math.random()*p.length)];
- G={last:target,target,count:0,attempts:0,remaining:target/10};
- renderBundlePractice();
-}
-function renderBundlePractice(){
- const used=G.count/10, need=G.target/10;
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
- '<h2 style="text-align:center">② <b>'+G.target+'</b>을 만들어 보세요</h2>'+
- '<div class="msg">아래의 10개 묶음을 <b>하나씩 끌어서</b> 위의 수판으로 옮겨 주세요.<br>'+
- '<b>옮긴 묶음은 아래에서 없어집니다.</b></div>'+
- '<div class="note" style="text-align:center">필요한 묶음: <b>'+need+'개</b>　현재 옮긴 묶음: <b>'+used+'개</b></div>'+
- '<div id="placed" style="min-height:100px">'+(used?bundles(used):'<div class="note">여기에 10개 묶음이 놓입니다.</div>')+'</div>'+
- '<div id="st" class="status">현재 '+G.count+'개</div>'+
- '<div id="src" class="source" style="min-height:80px"></div>'+
- '<div class="actions">'+B('check','완성했어요!','primary')+'</div>'+
- '<div class="note">🔟 필요한 묶음만 제공됩니다. 옮긴 묶음은 다시 아래에 나타나지 않으며, 필요한 수보다 많이 옮길 수 없습니다.</div>'+
- '</div></div>';
- back.onclick=menu;
- const src=document.getElementById('src');
- for(let i=0;i<G.remaining;i++){
-   let x=document.createElement('button');
-   x.className='drag10';
-   x.innerHTML='🔟<small>10개</small>';
-   dragTen(x);
-   src.appendChild(x);
- }
- document.getElementById('check').onclick=checkBundle;
-}
-function dragTen(x){
- let dragging=false;
- x.addEventListener('pointerdown',e=>{
-   dragging=true;
-   x.setPointerCapture?.(e.pointerId);
-   x.style.opacity='.45';
- });
- x.addEventListener('pointerup',e=>{
-   if(!dragging)return;
-   dragging=false;
-   x.style.opacity='';
-   const dest=document.getElementById('placed').getBoundingClientRect();
-   if(e.clientX>=dest.left&&e.clientX<=dest.right&&e.clientY>=dest.top&&e.clientY<=dest.bottom){
-      // IMPORTANT: consume exactly one source bundle and never recreate it.
-      x.remove();
-      G.remaining--;
-      G.count+=10;
-      updateBundleDisplay();
-   }
- });
- x.addEventListener('pointercancel',()=>{
-   dragging=false;
-   x.style.opacity='';
- });
-}
-function updateBundleDisplay(){
- const used=G.count/10;
- const placed=document.getElementById('placed');
- placed.innerHTML=used?bundles(used):'<div class="note">여기에 10개 묶음이 놓입니다.</div>';
- document.getElementById('st').innerHTML='현재 <b>'+G.count+'개</b>　(10개 묶음 '+used+'개)';
- const source=document.getElementById('src');
- source.innerHTML='';
- for(let i=0;i<G.remaining;i++){
-   let x=document.createElement('button');
-   x.className='drag10';
-   x.innerHTML='🔟<small>10개</small>';
-   dragTen(x);
-   source.appendChild(x);
- }
- if(G.remaining===0)source.innerHTML='<div class="note">모든 묶음을 옮겼어요. 더 옮길 묶음이 없습니다.</div>';
-}
-function checkBundle(){
- const st=document.getElementById('st');
- if(G.count===G.target){
-   st.innerHTML='🎉 <b>다 옮겼어요!</b><br><b>'+G.target+'을 잘 만들었어요!</b><br>🔟 '+(G.target/10)+'개 = '+G.target;
-   const c=document.getElementById('check');
-   c.textContent='새로운 문제';
-   c.onclick=bundlePractice;
- }else{
-   G.attempts++;
-   st.innerHTML='🌱 아직 <b>'+(G.target-G.count)+'개</b>가 더 필요해요.';
- }
-}
+function tenStage(){let nums=[10,20,30,40,50,60,70,80,90,100],p=nums.filter(n=>n!==G.last),target=p[Math.floor(Math.random()*p.length)];G={last:target,target:target,count:0,remaining:target/10};renderTen()}
+function renderTen(){let used=G.count/10;app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">② <b>'+G.target+'</b>을 만들어 보세요</h2><div class="msg">🔟 묶음을 <b>하나씩 끌어서</b> 위의 수판으로 옮겨 주세요.</div><div class="note" style="text-align:center">필요한 묶음 '+(G.target/10)+'개　|　옮긴 묶음 '+used+'개</div><div id="tenDest" class="board" data-drop="yes" style="min-height:110px">'+(used?Array.from({length:used},()=>'<div class="row"><div class="cell filled">🔟</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>').join(''):'<div class="msg">여기에 묶음을 놓아요.</div>')+'</div><div id="tenSrc" class="source"></div><div id="st" class="status">현재 '+G.count+'개</div><div class="actions">'+B('check','완성했어요!','primary')+'</div></div></div>';back.onclick=menu;
+for(let i=0;i<G.remaining;i++){let x=document.createElement('button');x.className='object';x.textContent='🔟';makeDraggable(x,target=>{if(target.id==='tenDest'){G.remaining--;G.count+=10;renderTen()}});tenSrc.appendChild(x)}
+check.onclick=()=>{if(G.count===G.target){st.innerHTML='🎉 <b>다 옮겼어요!</b><br><b>'+G.target+'을 잘 만들었어요!</b><br>🔟 '+(G.target/10)+'개 = '+G.target;check.textContent='새로운 문제';check.onclick=tenStage}else st.innerHTML='🌱 아직 '+(G.target-G.count)+'개가 더 필요해요.'}}
 
-/* shared answer */
-function answersFor(correct,next){
- let a=[correct];while(a.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!a.includes(x))a.push(x)}a.sort(()=>Math.random()-.5);
- a.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(q.disabled)return;if(x===correct){q.classList.add('right');document.getElementById('st').innerHTML='🎉 맞았어요! <b>'+correct+'</b>개예요.';setTimeout(next,650)}else{q.classList.add('wrong');q.disabled=true;document.getElementById('st').innerHTML='🌱 틀렸어요. 빨간 답은 다시 고르지 않아도 돼요.'}};document.getElementById('answers').appendChild(q)})
-}
-/* ③ 덧셈: physically drag objects from each group into the common board */
-function addStage(){
- let a=1+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*7);
- renderAdd(a,b);
-}
-function renderAdd(a,b){
- const total=a+b;
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
- '<h2 style="text-align:center">③ 덧셈</h2>'+
- '<div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="srcA" class="source">'+objects(a,'🍎','a')+'</div></div>'+
- '<div class="col"><h3>🍐 '+b+'개</h3><div id="srcB" class="source">'+objects(b,'🍐','b')+'</div></div></div>'+
- '<div class="explain">🍎과 🍐를 하나씩 끌어 가운데 수판으로 모아 보세요.</div>'+
- '<div id="dest" class="board"><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div></div>'+
- '<div id="st" class="status">옮긴 수: <b>0</b>개</div><div class="actions">'+B('checkAdd','다 옮겼어요!','primary')+'</div></div></div>';
- back.onclick=menu;
- document.querySelectorAll('.object').forEach(x=>dragObject(x,'dest',()=>updateAdd(a,b)));
- document.getElementById('checkAdd').onclick=()=>{let n=document.querySelectorAll('#dest .filled').length;if(n===total){st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>🍎과 🍐를 합하니까 '+total+'개가 되었네요!';setTimeout(()=>retry(addStage),1000)}else st.innerHTML='🌱 아직 '+(total-n)+'개를 더 옮겨 주세요.'};
-}
-function objects(n,e,group){let s='';for(let i=0;i<n;i++)s+='<button class="object" data-group="'+group+'">'+e+'</button>';return s}
-function dragObject(el,destId,update){
- let dragging=false, ghost=null, ox=0, oy=0;
- const move=e=>{
-  if(!dragging)return;
-  e.preventDefault();
-  const t=e.touches?e.touches[0]:e;
-  ghost.style.left=(t.clientX-ox)+'px';
-  ghost.style.top=(t.clientY-oy)+'px';
- };
- const end=e=>{
-  if(!dragging)return;
-  e.preventDefault();
-  dragging=false;
-  document.removeEventListener('pointermove',move);
-  document.removeEventListener('pointerup',end);
-  document.removeEventListener('touchmove',move,{passive:false});
-  document.removeEventListener('touchend',end);
-  const t=e.changedTouches?e.changedTouches[0]:e;
-  const d=document.getElementById(destId).getBoundingClientRect();
-  const inside=t.clientX>=d.left&&t.clientX<=d.right&&t.clientY>=d.top&&t.clientY<=d.bottom;
-  if(inside){
-    const cell=document.querySelector('#'+destId+' .cell:not(.filled)');
-    if(cell){
-      cell.textContent=el.textContent;
-      cell.classList.add('filled');
-      el.remove();
-      update();
-    }
-  }
-  if(ghost)ghost.remove();
- };
- const begin=e=>{
-  if(dragging)return;
-  e.preventDefault();
-  dragging=true;
-  const t=e.touches?e.touches[0]:e;
-  const r=el.getBoundingClientRect();
-  ox=t.clientX-r.left; oy=t.clientY-r.top;
-  ghost=el.cloneNode(true);
-  ghost.style.position='fixed';
-  ghost.style.zIndex='9999';
-  ghost.style.pointerEvents='none';
-  ghost.style.margin='0';
-  ghost.style.width=r.width+'px';
-  ghost.style.height=r.height+'px';
-  ghost.style.left=(t.clientX-ox)+'px';
-  ghost.style.top=(t.clientY-oy)+'px';
-  ghost.style.opacity='.85';
-  document.body.appendChild(ghost);
-  document.addEventListener('pointermove',move,{passive:false});
-  document.addEventListener('pointerup',end,{passive:false});
-  document.addEventListener('touchmove',move,{passive:false});
-  document.addEventListener('touchend',end,{passive:false});
- };
- el.style.touchAction='none';
- el.addEventListener('pointerdown',begin,{passive:false});
- el.addEventListener('touchstart',begin,{passive:false});
-}
+/* ③ addition: real touch drag */
+function addStage(){let a=1+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*7);let total=a+b;app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">③ 덧셈</h2><div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="sa" class="source"></div></div><div class="col"><h3>🍐 '+b+'개</h3><div id="sb" class="source"></div></div></div><div class="msg">🍎과 🍐를 <b>하나씩 끌어서</b> 가운데 수판에 모아 보세요.</div><div id="addDest" class="board" data-drop="yes" style="min-height:160px">'+Array.from({length:4},()=>'<div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div>').join('')+'</div><div id="st" class="status">옮긴 수: <b>0</b>개 / 목표 '+total+'개</div><div class="actions">'+B('doneAdd','다 옮겼어요!','primary')+'</div></div></div>';back.onclick=menu;
+function fill(id,n,e){for(let i=0;i<n;i++){let x=document.createElement('button');x.className='object';x.textContent=e;makeDraggable(x,target=>{if(target.id==='addDest'){let cell=target.querySelector('.cell:not(.filled)');if(cell){cell.textContent=e;cell.classList.add('filled');x.remove();let k=target.querySelectorAll('.filled').length;st.innerHTML='옮긴 수: <b>'+k+'</b>개 / 목표 '+total+'개'}}});document.getElementById(id).appendChild(x)}}
+fill('sa',a,'🍎');fill('sb',b,'🍐');
+doneAdd.onclick=()=>{let n=addDest.querySelectorAll('.filled').length;if(n===total){st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>합하니까 '+total+'개가 되었네요!';setTimeout(()=>retry(addStage),1000)}else st.innerHTML='🌱 아직 '+(total-n)+'개를 더 옮겨 주세요.'}}
 
-function updateAdd(a,b){let n=document.querySelectorAll('#dest .filled').length;document.getElementById('st').innerHTML='옮긴 수: <b>'+n+'</b>개　→　목표 '+(a+b)+'개'}
+/* ④ subtraction */
+function subStage(){let a=3+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*a),ans=a-b;app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">④ 뺄셈</h2><div class="msg">🍎 '+a+'개가 있어요. '+b+'개를 <b>하나씩 끌어서</b> 아래로 빼 보세요.</div><div id="subSrc" class="source" data-drop="yes"></div><div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">뺀 수: 0개</div></div></div>';back.onclick=menu;
+for(let i=0;i<a;i++){let x=document.createElement('button');x.className='object';x.textContent='🍎';makeDraggable(x,target=>{if(target.id==='subSrc'&&subSrc.querySelectorAll('.taken').length<b){x.classList.add('taken');x.style.opacity='.45';subSrc.appendChild(x);let n=subSrc.querySelectorAll('.taken').length;st.innerHTML='뺀 수: <b>'+n+'</b>개';if(n===b){st.innerHTML='🎉 '+b+'개를 뺐어요!';numericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>'+ans+'개가 남았네요!';setTimeout(()=>retry(subStage),1000)})}}});subSrc.appendChild(x)}}
 
-/* ④ 뺄셈: drag objects from the board to the outside/removal area */
-function subStage(){
- let a=3+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*a);
- renderSub(a,b);
-}
-function renderSub(a,b){
- const ans=a-b;
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">④ 뺄셈</h2>'+
- '<div class="msg">🍎 '+a+'개가 있어요. 🍐 '+b+'개를 <b>하나씩 끌어 빼보세요.</b></div>'+
- '<div id="subBoard" class="board"><div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div><div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div></div>'+
- '<div id="remove" class="source" style="min-height:70px">여기로 빼 주세요 🍐</div>'+
- '<div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">먼저 '+b+'개를 빼 주세요.</div></div></div>';
- back.onclick=menu;
- document.querySelectorAll('#subBoard .cell').forEach((c,i)=>{
- if(i<a){
-  c.textContent='🍎'; c.classList.add('filled');
-  c.addEventListener('click',()=>{
-   if(c.classList.contains('taken')) return;
-   if(document.querySelectorAll('#remove .taken').length<b){
-    c.textContent='🍐'; c.classList.remove('filled'); c.classList.add('taken');
-    document.getElementById('remove').appendChild(c);
-    let n=document.querySelectorAll('#remove .taken').length;
-    st.innerHTML=n<b?'잘하고 있어요! '+n+'개를 뺐어요.':'🎉 '+b+'개를 다 뺐어요!';
-    if(n===b)showNumericAnswers(ans,()=>{
-      st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>'+a+'개에서 '+b+'개를 빼니 '+ans+'개가 남았네요!';
-      setTimeout(()=>retry(subStage),1000)
-    });
-   }
-  });
- }
-});
-}
-function showNumericAnswers(correct,done){
- const box=document.getElementById('answers');box.innerHTML='';
- let ar=[correct];while(ar.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!ar.includes(x))ar.push(x)}ar.sort(()=>Math.random()-.5);
- ar.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(x===correct){q.classList.add('right');q.disabled=true;done()}else{q.classList.add('wrong');q.disabled=true;document.getElementById('st').innerHTML='🌱 틀렸어요. 다른 답을 생각해 보세요.'}};box.appendChild(q)})
-}
+/* ⑤ */
+function carryStage(){let a=15+Math.floor(Math.random()*4),b=5+Math.floor(Math.random()*4),ans=a+b;simpleAdvanced('⑤ 받아올림',a,b,'+',ans,'일의 자리에서 10개를 모으면 🔟 1묶음으로 바꿔요.',carryStage)}
+/* ⑥ */
+function borrowStage(){let a=21+Math.floor(Math.random()*8),b=6+Math.floor(Math.random()*4);if(b>=a%10)b=6;let ans=a-b;simpleAdvanced('⑥ 받아내림',a,b,'−',ans,'일의 자리가 부족하면 🔟 1묶음을 🍎 10개로 풀어낼 수 있어요.',borrowStage)}
+function simpleAdvanced(title,a,b,op,ans,msg,next){app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+title+'</h2><div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+board(a%10,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+board(b%10,'🍐')+'</div></div><div class="notice">'+msg+'</div><div class="eq">'+a+' '+op+' '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;numericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' '+op+' '+b+' = <b>'+ans+'</b>';setTimeout(()=>retry(next),1000)})}
+function numericAnswers(correct,done){let ar=[correct];while(ar.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!ar.includes(x))ar.push(x)}ar.sort(()=>Math.random()-.5);ar.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(x===correct){q.classList.add('right');q.disabled=true;done()}else{q.classList.add('wrong');q.disabled=true;st.innerHTML='🌱 틀렸어요. 빨간 답은 다시 고르지 않아도 돼요.'}};answers.appendChild(q)})}
 function retry(next){if(confirm('같은 단계의 새로운 문제를 한 번 더 풀어 볼까요?'))next();else menu()}
-
-/* ⑤ 받아올림: make 10 from ones, then convert to one ten bundle */
-function carryStage(){
- let onesA=5+Math.floor(Math.random()*4),onesB=5+Math.floor(Math.random()*4);
- let a=10+onesA,b=onesB,total=a+b;
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">⑤ 받아올림</h2>'+
- '<div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+placeValue(a,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+placeValue(b,'🍐')+'</div></div>'+
- '<div class="notice">일의 자리에서 '+onesA+' + '+onesB+' = '+(onesA+onesB)+'개예요.<br>10개를 모아 🔟 1묶음으로 만들어 보세요.</div>'+
- '<div id="carryArea" class="source">'+Array.from({length:onesA+onesB},(_,i)=>'<button class="object carryObj">'+(i<onesA?'🍎':'🍐')+'</button>').join('')+'</div>'+
- '<div class="actions">'+B('makeTen','10개를 한 묶음으로 만들기','primary')+'</div><div id="carryExplain" class="explain">아직 10개를 모으지 않았어요.</div>'+
- '<div class="eq">'+a+' + '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">사물을 세어 보세요.</div></div></div>';
- back.onclick=menu;makeTen.onclick=()=>{carryExplain.innerHTML='🎉 10개를 모았어요!<br>🍎/🍐 10개 → 🔟 1묶음';carryArea.innerHTML=bundle();st.innerHTML='🔟 1묶음과 남은 낱개를 생각해 보세요.';showNumericAnswers(total,()=>{st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>10개를 🔟 1묶음으로 바꾸어 계산했어요!';setTimeout(()=>retry(carryStage),1000)})}
-}
-
-/* ⑥ 받아내림: click one ten bundle to unfold it into ten objects */
-function borrowStage(){
- let tens=2+Math.floor(Math.random()*2),ones=0+Math.floor(Math.random()*3),b=6+Math.floor(Math.random()*4),a=tens*10+ones;
- if(a<=b)a+=10;let ans=a-b;
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">⑥ 받아내림</h2>'+
- '<div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+placeValue(a,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+board(b,'🍐')+'</div></div>'+
- '<div class="notice">일의 자리에서 '+b+'개를 빼야 하는데 부족해요.<br>🔟 십 묶음 1개를 눌러 <b>🍎 10개</b>로 풀어 보세요.</div>'+
- '<div id="borrowTen" class="source"><button id="unbundle" class="drag10">🔟<small>눌러서 10개로</small></button></div>'+
- '<div id="borrowExplain" class="explain">🔟 1묶음이 있어요.</div><div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">먼저 십 묶음을 풀어 보세요.</div></div></div>';
- back.onclick=menu;
- unbundle.onclick=()=>{borrowTen.innerHTML=board(10,'🍎');borrowExplain.innerHTML='🔟 1묶음 → 🍎 10개!<br>이제 일의 자리에서 빼낼 수 있어요.';st.innerHTML='🎉 10개로 바꾸었어요!';showNumericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>십 묶음 1개를 10개로 풀어서 계산했어요!';setTimeout(()=>retry(borrowStage),1000)})}
-}
-function placeValue(n,e){let t=Math.floor(n/10),o=n%10;return (t?bundles(t,e):'')+'<div class="msg">일의 자리 '+o+'개</div>'+board(o,e)}
-
 menu();
-})();
-</script></body></html>
+</script>
+</body>
+</html>
