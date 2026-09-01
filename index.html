@@ -49,16 +49,89 @@ function lesson(i){
  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+d[0]+'</h2>'+d[1]+'<div class="msg">'+d[2]+'</div><div class="actions">'+B('next',i<4?'다음 →':'직접 만들어 보기 →','primary')+'</div></div></div>';back.onclick=menu;next.onclick=()=>i<4?lesson(i+1):bundlePractice();
 }
 function bundlePractice(){
- let nums=[10,20,30,40,50,60,70,80,90,100],p=nums.filter(n=>n!==G.last),target=p[Math.floor(Math.random()*p.length)];G={last:target,target,count:0,attempts:0};
+ let nums=[10,20,30,40,50,60,70,80,90,100],p=nums.filter(n=>n!==G.last);
+ let target=p[Math.floor(Math.random()*p.length)];
+ G={last:target,target,count:0,attempts:0,remaining:target/10};
  renderBundlePractice();
 }
 function renderBundlePractice(){
- const need=G.target/10,used=G.count/10;
- app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">② <b>'+G.target+'</b>을 만들어 보세요</h2><div class="msg">아래의 10개 묶음을 <b>하나씩 끌어</b> 위의 수판으로 옮겨 주세요.<br><b>옮긴 묶음은 아래에서 없어집니다.</b></div><div id="placed">'+(used?bundles(used):'<div class="note">여기에 10개 묶음이 놓입니다.</div>')+'</div><div id="st" class="status">현재 '+G.count+'개</div><div id="src" class="source"></div><div class="actions">'+B('check','완성했어요!','primary')+'</div><div class="note">문제에 필요한 묶음 '+need+'개만 제공됩니다. 더 많이 옮길 수 없어요.</div></div></div>';
- back.onclick=menu;const src=document.getElementById('src');for(let i=0;i<need;i++){let x=document.createElement('button');x.className='drag10';x.innerHTML='🔟<small>10개</small>';dragTen(x);src.appendChild(x)}document.getElementById('check').onclick=checkBundle;
+ const used=G.count/10, need=G.target/10;
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
+ '<h2 style="text-align:center">② <b>'+G.target+'</b>을 만들어 보세요</h2>'+
+ '<div class="msg">아래의 10개 묶음을 <b>하나씩 끌어서</b> 위의 수판으로 옮겨 주세요.<br>'+
+ '<b>옮긴 묶음은 아래에서 없어집니다.</b></div>'+
+ '<div class="note" style="text-align:center">필요한 묶음: <b>'+need+'개</b>　현재 옮긴 묶음: <b>'+used+'개</b></div>'+
+ '<div id="placed" style="min-height:100px">'+(used?bundles(used):'<div class="note">여기에 10개 묶음이 놓입니다.</div>')+'</div>'+
+ '<div id="st" class="status">현재 '+G.count+'개</div>'+
+ '<div id="src" class="source" style="min-height:80px"></div>'+
+ '<div class="actions">'+B('check','완성했어요!','primary')+'</div>'+
+ '<div class="note">🔟 필요한 묶음만 제공됩니다. 옮긴 묶음은 다시 아래에 나타나지 않으며, 필요한 수보다 많이 옮길 수 없습니다.</div>'+
+ '</div></div>';
+ back.onclick=menu;
+ const src=document.getElementById('src');
+ for(let i=0;i<G.remaining;i++){
+   let x=document.createElement('button');
+   x.className='drag10';
+   x.innerHTML='🔟<small>10개</small>';
+   dragTen(x);
+   src.appendChild(x);
+ }
+ document.getElementById('check').onclick=checkBundle;
 }
-function dragTen(x){let down=false;x.addEventListener('pointerdown',e=>{down=true;x.setPointerCapture?.(e.pointerId);x.style.opacity='.4'});x.addEventListener('pointerup',e=>{if(!down)return;down=false;x.style.opacity='';let r=document.getElementById('placed').getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){x.remove();G.count+=10;renderBundlePractice()}});x.addEventListener('pointercancel',()=>{down=false;x.style.opacity=''})}
-function checkBundle(){let st=document.getElementById('st');if(G.count===G.target){st.innerHTML='🎉 <b>'+G.target+'개</b>! 10개 묶음 '+(G.target/10)+'개예요.';let c=document.getElementById('check');c.textContent='새로운 문제';c.onclick=bundlePractice}else{G.attempts++;st.innerHTML='🌱 아직 '+(G.target-G.count)+'개가 더 필요해요.'}}
+function dragTen(x){
+ let dragging=false;
+ x.addEventListener('pointerdown',e=>{
+   dragging=true;
+   x.setPointerCapture?.(e.pointerId);
+   x.style.opacity='.45';
+ });
+ x.addEventListener('pointerup',e=>{
+   if(!dragging)return;
+   dragging=false;
+   x.style.opacity='';
+   const dest=document.getElementById('placed').getBoundingClientRect();
+   if(e.clientX>=dest.left&&e.clientX<=dest.right&&e.clientY>=dest.top&&e.clientY<=dest.bottom){
+      // IMPORTANT: consume exactly one source bundle and never recreate it.
+      x.remove();
+      G.remaining--;
+      G.count+=10;
+      updateBundleDisplay();
+   }
+ });
+ x.addEventListener('pointercancel',()=>{
+   dragging=false;
+   x.style.opacity='';
+ });
+}
+function updateBundleDisplay(){
+ const used=G.count/10;
+ const placed=document.getElementById('placed');
+ placed.innerHTML=used?bundles(used):'<div class="note">여기에 10개 묶음이 놓입니다.</div>';
+ document.getElementById('st').innerHTML='현재 <b>'+G.count+'개</b>　(10개 묶음 '+used+'개)';
+ const source=document.getElementById('src');
+ source.innerHTML='';
+ for(let i=0;i<G.remaining;i++){
+   let x=document.createElement('button');
+   x.className='drag10';
+   x.innerHTML='🔟<small>10개</small>';
+   dragTen(x);
+   source.appendChild(x);
+ }
+ if(G.remaining===0)source.innerHTML='<div class="note">모든 묶음을 옮겼어요. 더 옮길 묶음이 없습니다.</div>';
+}
+function checkBundle(){
+ const st=document.getElementById('st');
+ if(G.count===G.target){
+   st.innerHTML='🎉 <b>'+G.target+'개</b>! 10개 묶음 '+(G.target/10)+'개예요.';
+   const c=document.getElementById('check');
+   c.textContent='새로운 문제';
+   c.onclick=bundlePractice;
+ }else{
+   G.attempts++;
+   st.innerHTML='🌱 아직 <b>'+(G.target-G.count)+'개</b>가 더 필요해요.';
+ }
+}
+
 /* shared answer */
 function answersFor(correct,next){
  let a=[correct];while(a.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!a.includes(x))a.push(x)}a.sort(()=>Math.random()-.5);
