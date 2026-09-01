@@ -3,146 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>수학놀이터 V8.3</title>
+<title>수학놀이터 V8.4</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f7f8fb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}
-button{font:inherit}.app{max-width:760px;margin:auto;padding:18px 14px 40px}.top{background:#ffe56b;border-radius:24px;padding:18px;text-align:center;margin-bottom:14px}
-h1{margin:0;font-size:30px}.sub{margin-top:7px;font-weight:700}.card{background:#fff;border-radius:24px;padding:18px;box-shadow:0 3px 14px #00000012;margin:12px 0}
-.menu{display:grid;gap:12px}.menu button,.big{border:0;border-radius:18px;padding:18px;background:#fff;font-size:21px;font-weight:900;box-shadow:0 2px 9px #0001}
-.back{border:0;border-radius:14px;padding:11px 16px;font-weight:800;background:#eee;margin-bottom:12px}
+button{font:inherit}.app{max-width:800px;margin:auto;padding:16px 12px 40px}.top{background:#ffe56b;border-radius:24px;padding:17px;text-align:center;margin-bottom:12px}
+h1{margin:0;font-size:29px}.sub{margin-top:6px;font-weight:700}.card{background:#fff;border-radius:24px;padding:17px;box-shadow:0 3px 14px #0001;margin:12px 0}
+.menu{display:grid;gap:11px}.menu button{border:0;border-radius:18px;padding:17px;background:#fff;font-size:21px;font-weight:900;box-shadow:0 2px 9px #0001}
+.back{border:0;border-radius:14px;padding:10px 15px;font-weight:800;background:#eee}.eq{font-size:37px;font-weight:950;text-align:center;margin:10px}
+.msg{text-align:center;font-size:19px;font-weight:800;line-height:1.5}.actions{text-align:center;margin:10px 0}.actions button{border:0;border-radius:15px;padding:12px 19px;margin:4px;font-weight:900}
+.primary{background:#ffe56b}.secondary{background:#e9edf2}.status{text-align:center;font-size:20px;font-weight:900;min-height:30px;margin:10px}
 .board{background:#fff8df;border:3px solid #e8d69b;border-radius:18px;padding:8px;margin:12px auto;max-width:590px}
-.row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.row+.row{margin-top:7px}
-.cell{height:54px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:35px}
-.eq{font-size:38px;font-weight:950;text-align:center;margin:10px}.msg{text-align:center;font-size:20px;font-weight:800;line-height:1.5}
-.bundles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.bundle{border:3px solid #f0cf45;border-radius:18px;padding:7px;background:#fff;width:min(290px,100%)}
-.bundle .board{border:0;padding:4px;margin:0}.bundletitle{text-align:center;font-weight:900;padding:4px}
-.source{display:grid;grid-template-columns:repeat(5,54px);justify-content:center;gap:9px;padding:14px;background:#f0f3f7;border-radius:18px;margin-top:12px}
-.apple{width:54px;height:54px;border:0;border-radius:14px;background:#fff;font-size:36px;touch-action:none;user-select:none;-webkit-user-select:none}
-.actions{text-align:center;margin-top:12px}.actions button{border:0;border-radius:15px;padding:13px 20px;margin:4px;font-weight:900}
-.primary{background:#ffe56b}.secondary{background:#e9edf2}.status{text-align:center;font-size:20px;font-weight:900;min-height:32px;margin:10px}
-.note{background:#fff8df;border-radius:16px;padding:12px;font-weight:800;line-height:1.5}
-@media(max-width:500px){h1{font-size:25px}.cell{height:45px;font-size:30px}.source{grid-template-columns:repeat(5,48px);gap:7px}.apple{width:48px;height:48px;font-size:31px}.eq{font-size:32px}}
+.row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.row+.row{margin-top:7px}.cell{height:48px;background:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.bundles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px auto;max-width:680px}
+.bundle{border:3px solid #f0cf45;border-radius:18px;padding:7px;background:#fff}.bundle .board{border:0;padding:3px;margin:0}.bundletitle{text-align:center;font-weight:900;padding:3px}
+.source,.bundle-source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:13px;background:#f0f3f7;border-radius:18px;margin-top:10px}
+.apple,.ten-card{width:58px;height:58px;border:0;border-radius:15px;background:#fff;font-size:37px;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 7px #0001}
+.ten-card{font-size:28px;font-weight:950;border:3px solid #f0cf45}.ten-card small{display:block;font-size:10px;margin-top:-5px}
+.pill{display:inline-block;background:#fff8df;border-radius:15px;padding:8px 13px;font-weight:900;margin:4px}
+.grid100{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:560px;margin:12px auto}.tenbox{border:2px solid #e8d69b;background:#fff8df;border-radius:10px;padding:6px;font-size:25px;text-align:center}
+.note{background:#fff8df;border-radius:16px;padding:12px;font-weight:800;line-height:1.5;margin-top:10px}
+@media(max-width:500px){h1{font-size:25px}.cell{height:43px;font-size:28px}.apple,.ten-card{width:48px;height:48px;font-size:30px}.grid100{gap:4px}.tenbox{font-size:21px;padding:4px}}
 </style>
 </head>
-<body>
-<div id="app"></div>
+<body><div id="app"></div>
 <script>
 (function(){
 'use strict';
 const app=document.getElementById('app');
-let practiceTarget=10, practiceCount=0, attempts=0, q=1;
+let target=10,count=0,attempts=0,lastTarget=0,practiceMode='bundle';
 
-function board(n, emoji='🍎'){
-  n=Math.max(0,Math.min(10,n));
-  let s='<div class="board">';
-  for(let r=0;r<2;r++){
-    s+='<div class="row">';
-    for(let c=0;c<5;c++){
-      const i=r*5+c;
-      s+='<div class="cell">'+(i<n?emoji:'')+'</div>';
-    }
-    s+='</div>';
-  }
-  return s+'</div>';
+function board(n,emoji='🍎'){
+ n=Math.max(0,Math.min(10,n));let s='<div class="board">';
+ for(let r=0;r<2;r++){s+='<div class="row">';for(let c=0;c<5;c++){let i=r*5+c;s+='<div class="cell">'+(i<n?emoji:'')+'</div>';}s+='</div>';}
+ return s+'</div>';
 }
-function bundles(n){
-  let s='<div class="bundles">';
-  for(let i=0;i<n;i++) s+='<div class="bundle"><div class="bundletitle">🔟 10개 묶음</div>'+board(10)+'</div>';
-  return s+'</div>';
-}
-function btn(id,label,cls='secondary'){return '<button id="'+id+'" class="'+cls+'">'+label+'</button>';}
+function bundleVisual(){return '<div class="bundle"><div class="bundletitle">🔟 10개 묶음</div>'+board(10)+'</div>';}
+function bundles(n){let s='<div class="bundles">';for(let i=0;i<n;i++)s+=bundleVisual();return s+'</div>';}
+function b(id,label,cl='secondary'){return '<button id="'+id+'" class="'+cl+'">'+label+'</button>';}
 
 function menu(){
-  app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div>'+
-  '<div class="card"><div class="menu">'+
-  '<button id="stage1">① 수 세기</button>'+
-  '<button id="stage2">② 🔟 10의 개념</button>'+
-  '<button id="stage3">③ 덧셈</button>'+
-  '<button id="stage4">④ 뺄셈</button>'+
-  '<button id="stage5">⑤ 받아올림</button>'+
-  '<button id="stage6">⑥ 받아내림</button>'+
-  '</div></div></div>';
-  document.getElementById('stage2').onclick=stage2;
-  ['stage1','stage3','stage4','stage5','stage6'].forEach(id=>{
-    document.getElementById(id).onclick=()=>alert('이 버전에서는 ② 10의 개념을 먼저 안정적으로 테스트합니다.');
-  });
+ app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
+ '<button id="s1">① 수 세기</button><button id="s2">② 🔟 10의 개념</button><button id="s3">③ 덧셈</button><button id="s4">④ 뺄셈</button><button id="s5">⑤ 받아올림</button><button id="s6">⑥ 받아내림</button>'+
+ '</div></div></div>';
+ document.getElementById('s2').onclick=stage2;
+ ['s1','s3','s4','s5','s6'].forEach(id=>document.getElementById(id).onclick=()=>alert('이 버전에서는 ② 10의 개념을 확장하여 테스트합니다.'));
 }
 
-function stage2(){
-  concept(0);
+function stage2(){lesson(0);}
+function lesson(step){
+ let data;
+ if(step===0)data=['① 5개와 5개를 합하면 10개','5 + 5 = 10','5개씩 두 줄이에요. 모두 세면 10개예요.',board(10)];
+ else if(step===1)data=['② 🔟 10개 묶음 1개 = 10','🔟 = 10','10개의 사물을 하나의 묶음으로 생각할 수 있어요.',bundleVisual()];
+ else if(step===2)data=['③ 🔟 2개 = 20','10 + 10 = 20','10개 묶음이 2개니까 20개예요.',bundles(2)];
+ else if(step===3)data=['④ 🔟 3개 = 30','10 + 10 + 10 = 30','10개 묶음이 3개니까 30개예요.',bundles(3)];
+ else data=['⑤ 10개 묶음은 100까지 만들 수 있어요','10 × 10 = 100','10개 묶음이 10개면 100개예요.',allTenGrid()];
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+data[0]+'</h2>'+data[3]+'<div class="eq">'+data[1]+'</div><div class="msg">'+data[2]+'</div><div class="actions">'+b('next',step<4?'다음 →':'10개 묶음으로 직접 만들어 보기 →','primary')+'</div></div></div>';
+ document.getElementById('back').onclick=menu;
+ document.getElementById('next').onclick=()=>step<4?lesson(step+1):practice();
 }
-function concept(step){
-  const data=[
-    ['① 5개와 5개를 합하면 10개','5 + 5 = 10','5개씩 두 줄이에요. 모두 세면 10개예요.',board(10)],
-    ['② 10개 묶음 2개는 20개','10 + 10 = 20','10개 묶음이 2개니까 20개예요.',bundles(2)],
-    ['③ 10개 묶음 3개는 30개','10 + 10 + 10 = 30','10개 묶음이 3개니까 30개예요.',bundles(3)]
-  ][step];
-  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
-  '<h2 style="text-align:center">'+data[0]+'</h2>'+data[3]+
-  '<div class="eq">'+data[1]+'</div><div class="msg">'+data[2]+'</div>'+
-  '<div class="actions">'+btn('next',step<2?'다음 →':'직접 만들어 보기 →','primary')+'</div></div></div>';
-  document.getElementById('back').onclick=menu;
-  document.getElementById('next').onclick=()=>step<2?concept(step+1):practice();
-}
+function allTenGrid(){let s='<div class="grid100">';for(let i=0;i<10;i++)s+='<div class="tenbox">🔟</div>';return s+'</div>';}
 
 function practice(){
-  practiceTarget=[10,20,30][Math.floor(Math.random()*3)];
-  practiceCount=0;attempts=0;
-  renderPractice();
+ practiceMode='bundle';
+ let choices=[10,20,30,40,50,60,70,80,90,100];
+ let pool=choices.filter(x=>x!==lastTarget);target=pool[Math.floor(Math.random()*pool.length)];lastTarget=target;
+ count=0;attempts=0;renderBundlePractice();
 }
-function renderPractice(){
-  let b=Math.floor(practiceCount/10), r=practiceCount%10;
-  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
-  '<h2 style="text-align:center">🔟 10개 묶음 '+(practiceTarget/10)+'개를 만들어 보세요</h2>'+
-  '<div class="msg">🍎 사과를 <b>하나씩 끌어서</b> 위의 5칸 배경 수판에 놓아 주세요.</div>'+
-  '<div id="made">'+board(r)+'</div>'+
-  '<div id="bun">'+(b?bundles(b):'')+'</div>'+
-  '<div class="status" id="status">현재 '+practiceCount+'개</div>'+
-  '<div class="source" id="source"></div>'+
-  '<div class="actions">'+btn('check','완성했어요!','primary')+'</div>'+
-  '<div class="note">💡 10개가 모이면 🔟 10개 묶음 1개가 됩니다. 20개면 2개, 30개면 3개예요.</div>'+
-  '</div></div>';
-  document.getElementById('back').onclick=menu;
-  const src=document.getElementById('source');
-  for(let i=0;i<practiceTarget;i++){
-    const a=document.createElement('button');
-    a.className='apple';a.textContent='🍎';a.dataset.used='0';
-    attachDrag(a);src.appendChild(a);
-  }
-  document.getElementById('check').onclick=check;
+function renderBundlePractice(){
+ let used=Math.floor(count/10),remain=count%10;
+ app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
+ '<h2 style="text-align:center">🔟 <b>'+target+'</b>을 만들어 보세요</h2>'+
+ '<div class="msg">10개 묶음을 <b>하나씩 끌어서</b> 아래 수판으로 옮겨 보세요.</div>'+
+ '<div id="placed">'+(used?bundles(used):'<div class="note">아직 10개 묶음이 없어요.</div>')+'</div>'+
+ '<div id="loose">'+(remain?'<div class="msg">남은 낱개: '+board(remain)+'</div>':'')+'</div>'+
+ '<div class="status" id="status">현재 '+count+'개</div>'+
+ '<div class="bundle-source" id="source"></div>'+
+ '<div class="actions">'+b('check','완성했어요!','primary')+'</div>'+
+ '<div class="note">💡 10개 묶음 1개 = 10, 2개 = 20, 3개 = 30… 10개 = 100</div>'+
+ '</div></div>';
+ document.getElementById('back').onclick=menu;
+ const src=document.getElementById('source'),need=target/10;
+ for(let i=0;i<need;i++){let x=document.createElement('button');x.className='ten-card';x.innerHTML='🔟<small>10개</small>';src.appendChild(x);dragBundle(x);}
+ document.getElementById('check').onclick=checkBundle;
 }
-function attachDrag(a){
-  let down=false;
-  a.addEventListener('pointerdown',e=>{
-    if(a.dataset.used==='1')return;
-    down=true;a.setPointerCapture?.(e.pointerId);a.style.opacity='.4';
-  });
-  a.addEventListener('pointerup',e=>{
-    if(!down)return;down=false;a.style.opacity='';
-    const target=document.getElementById('made').getBoundingClientRect();
-    if(e.clientX>=target.left&&e.clientX<=target.right&&e.clientY>=target.top&&e.clientY<=target.bottom){
-      a.dataset.used='1';a.remove();practiceCount++;
-      const b=Math.floor(practiceCount/10),r=practiceCount%10;
-      document.getElementById('made').innerHTML=board(r);
-      document.getElementById('bun').innerHTML=b?bundles(b):'';
-      document.getElementById('status').textContent='현재 '+practiceCount+'개';
-    }
-  });
-  a.addEventListener('pointercancel',()=>{down=false;a.style.opacity='';});
+function dragBundle(el){
+ let down=false;
+ el.addEventListener('pointerdown',e=>{down=true;el.setPointerCapture?.(e.pointerId);el.style.opacity='.4';});
+ el.addEventListener('pointerup',e=>{
+  if(!down)return;down=false;el.style.opacity='';
+  const r=document.getElementById('placed').getBoundingClientRect();
+  if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){el.remove();count+=10;renderBundlePractice();}
+ });
+ el.addEventListener('pointercancel',()=>{down=false;el.style.opacity='';});
 }
-function check(){
-  const st=document.getElementById('status');
-  if(practiceCount===practiceTarget){
-    st.innerHTML='🎉 잘했어요! <b>'+practiceTarget+'개</b> = 🔟 10개 묶음 '+(practiceTarget/10)+'개';
-    document.getElementById('check').textContent='새로운 문제';
-    document.getElementById('check').onclick=practice;
-  }else{
-    attempts++;
-    st.innerHTML='🌱 지금은 <b>'+practiceCount+'개</b>예요. '+(practiceTarget-practiceCount)+'개 더 옮겨 보세요.';
-  }
+function checkBundle(){
+ const st=document.getElementById('status');
+ if(count===target){st.innerHTML='🎉 <b>'+target+' = 10 × '+(target/10)+'</b> 잘했어요!';document.getElementById('check').textContent='새로운 문제';document.getElementById('check').onclick=practice;}
+ else{attempts++;st.innerHTML='🌱 지금은 <b>'+count+'개</b>예요. '+(target-count)+'개가 더 필요해요.';}
 }
+
 menu();
 })();
-</script>
-</body>
-</html>
+</script></body></html>
