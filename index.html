@@ -185,12 +185,12 @@ function tenStage(){
 function addStage(){
   let a=5+Math.floor(Math.random()*4), b=5+Math.floor(Math.random()*4), total=a+b;
   let movedA=0,movedB=0;
-  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">③ 덧셈</h2><div class="carryEquation">🍎 '+a+' + 🍐 '+b+' = ?</div><div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="sa" class="source"></div></div><div class="col"><h3>🍐 '+b+'개</h3><div id="sb" class="source" style="opacity:.38;pointer-events:none"></div></div></div><div id="addGuide" class="msg">먼저 🍎 사과를 모두 옮겨 보세요.<br>사과를 다 옮기면 🍐 배를 옮길 수 있어요.</div><div id="addDest" class="board" data-drop="yes" style="min-height:160px">'+Array.from({length:4},()=>'<div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div>').join('')+'</div><div id="st" class="status">🍎 옮긴 수: <b>0</b> / '+a+'</div><div class="actions"><button id="doneAdd" class="btn primary">다 옮겼어요!</button></div><div id="addTransform" class="transformClean" style="display:none"></div></div></div>';
+  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">③ 덧셈</h2><div class="carryEquation">🍎 '+a+' + 🍐 '+b+' = ?</div><div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="sa" class="source"></div></div><div class="col"><h3>🍐 '+b+'개</h3><div id="sb" class="source" style="opacity:.38;pointer-events:none"></div></div></div><div id="addGuide" class="msg">먼저 🍎 사과를 모두 옮겨 보세요.<br>사과를 다 옮기면 🍐 배를 옮길 수 있어요.</div><div id="addDest" class="board" data-drop="yes" style="min-height:160px">'+Array.from({length:4},()=>'<div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div>').join('')+'</div><div id="st" class="status">🍎 옮긴 수: <b>0</b> / '+a+'</div><div class="actions"><button id="doneAdd" class="btn primary">다 옮겼어요!</button></div><div id="addTransform" class="transformClean" style="display:none"></div><div class="eq" id="addEquation"></div><div id="answers" class="answerGrid"></div></div></div>';
   back.onclick=menu;
   function enablePears(){sb.style.opacity='1';sb.style.pointerEvents='auto';addGuide.innerHTML='👏 사과를 모두 옮겼어요!<br>이제 🍐 배를 모두 옮겨 보세요.';st.innerHTML='🍐 옮긴 수: <b>0</b> / '+b}
   function addObject(id,n,e,type){for(let i=0;i<n;i++){let x=document.createElement('button');x.className='object';x.textContent=e;makeDraggable(x,target=>{if(target.id!=='addDest')return;let cell=target.querySelector('.cell:not(.filled)');if(!cell)return;if(type==='pear'&&movedA<a)return;cell.textContent=e;cell.classList.add('filled');x.remove();if(type==='apple'){movedA++;st.innerHTML='🍎 옮긴 수: <b>'+movedA+'</b> / '+a;if(movedA===a)enablePears()}else{movedB++;st.innerHTML='🍐 옮긴 수: <b>'+movedB+'</b> / '+b;if(movedB===b)addGuide.innerHTML='🎉 모두 옮겼어요! 이제 「다 옮겼어요!」를 눌러 10묶음을 만들어 봐요.'}});document.getElementById(id).appendChild(x)}}
   addObject('sa',a,'🍎','apple');addObject('sb',b,'🍐','pear');
-  doneAdd.onclick=()=>{if(movedA!==a||movedB!==b){st.innerHTML=movedA<a?'🌱 먼저 🍎 사과를 모두 옮겨 주세요.':'🌱 이제 🍐 배를 모두 옮겨 주세요.';return}if(total>=10){let ones=total-10;addTransform.style.display='block';addTransform.innerHTML='<div class="resultTitle">🔟 10개를 한 묶음으로 만들어요</div><div class="tenBundlePreview"><div class="bundleTenVisual">'+Array.from({length:10},(_,i)=>'<span class="one">'+(i<a?'🍎':'🍐')+'</span>').join('')+'</div><div class="bundleArrow">→</div><div class="tenPackBig">🔟</div></div><div class="hiddenAnswerNote">10개를 🔟 1묶음으로 만들고, <b>일의 자리에는 '+ones+'개</b>가 남아요.</div><div class="finalNumberVisual"><div class="numberPart"><div class="big">🔟</div><div class="small">십의 자리 1묶음</div></div><div class="plus">+</div><div class="numberPart"><div class="big">'+ones+'개</div><div class="small">일의 자리</div></div></div>';st.innerHTML='🎉 '+total+'개를 모았어요! 10개를 1묶음으로 만들었어요.';doneAdd.style.display='none'} else {doneAdd.style.display='none'} numericAnswers(total,()=>{st.innerHTML='🎉 정답이에요!';retry(addStage)})};
+  doneAdd.onclick=()=>{if(movedA!==a||movedB!==b){st.innerHTML=movedA<a?'🌱 먼저 🍎 사과를 모두 옮겨 주세요.':'🌱 이제 🍐 배를 모두 옮겨 주세요.';return}doneAdd.style.display='none';if(total>=10){let ones=total-10;addTransform.style.display='block';addTransform.innerHTML='<div class="resultTitle">🔟 10개를 한 묶음으로 만들어요</div><div class="tenBundlePreview"><div class="bundleTenVisual">'+Array.from({length:10},(_,i)=>'<span class="one">'+(i<a?'🍎':'🍐')+'</span>').join('')+'</div><div class="bundleArrow">→</div><div class="tenPackBig">🔟</div></div><div class="hiddenAnswerNote">10개를 🔟 1묶음으로 만들고, <b>일의 자리에는 '+ones+'개</b>가 남아요.</div><div class="finalNumberVisual"><div class="numberPart"><div class="big">🔟</div><div class="small">십의 자리 1묶음</div></div><div class="plus">+</div><div class="numberPart"><div class="big">'+ones+'개</div><div class="small">일의 자리</div></div></div><div class="msg">이제 <b>🔟 묶음 + 일의 자리 '+ones+'개</b>를 합쳐서 몇 개인지 골라 보세요.</div>';st.innerHTML='🎉 10개를 1묶음으로 만들었어요!';document.getElementById('addEquation').innerHTML='🔟 1묶음 + '+ones+'개 = ?';numericAnswers(total,()=>{st.innerHTML='🎉 정답이에요!';retry(addStage)})}else{document.getElementById('addEquation').innerHTML=''+total+'개 = ?';numericAnswers(total,()=>{st.innerHTML='🎉 정답이에요!';retry(addStage)})}};
 }
 function subStage(){
   let a=11+Math.floor(Math.random()*9);
@@ -420,12 +420,11 @@ function borrowStage(){
 
     <div class="placeRow">
       <div class="placeBox"><b>십의 자리</b><div id="tensBox" class="tenRow">${pack(tens)}</div><div>${tens}개의 10묶음</div></div>
-      <div class="placeBox"><b>일의 자리</b>${itemGrid(ones)}<div>${ones}개</div></div>
+      <div class="placeBox"><b>일의 자리</b><div id="firstAvailable" class="borrowAvailable"></div><div>${ones}개</div></div>
     </div>
 
     <div class="borrowPhaseTitle">① 먼저 일의 자리에서 뺄 수 있는 만큼 빼요</div>
     <div id="firstTake" class="placeBox takeBox"><div class="dropHint">뺀 곳 · ${ones}개</div><div id="firstTakenItems" class="tenGrid"></div></div>
-    <div id="firstSource" class="tenGrid"></div>
     <div id="st" class="status">뺀 수: <b>0</b> / ${ones}</div>
 
     <div id="borrowStep"></div>
@@ -434,7 +433,7 @@ function borrowStage(){
   </div></div>`;
   back.onclick=menu;
 
-  const firstSource=document.getElementById('firstSource');
+  const firstSource=document.getElementById('firstAvailable');
   const firstTaken=document.getElementById('firstTakenItems');
 
   function updateFirst(){st.innerHTML='뺀 수: <b>'+firstTaken.children.length+'</b> / '+ones;}
