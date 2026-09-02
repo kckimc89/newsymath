@@ -335,7 +335,7 @@ function carryStage(){
           '<div class="bundleTenVisual">'+Array.from({length:10},(_,i)=>'<span class="one">'+(i<onesA?'🍎':'🍐')+'</span>').join('')+'</div>'+
           '<div class="bundleArrow">→</div>'+
           '<div class="tenPackBig">🔟</div>'+
-          '<div class="remainVisual">'+Array.from({length:remain},()=>'<span class="one">🍎</span>').join('')+'</div>'+
+          '<div class="remainVisual">'+Array.from({length:Math.max(0,onesB-1)},()=>'<span class="one">🍐</span>').join('')+'</div>'+
         '</div>'+
         '<div class="hiddenAnswerNote"><b>10개</b>를 🔟 1묶음으로 만들고, 일의 자리에는 <b>'+remain+'개</b>가 남아요.</div>';
       carryNext.textContent='③ 만든 🔟을 십의 자리로 옮기기';
@@ -424,7 +424,7 @@ function borrowStage(){
     </div>
 
     <div class="borrowPhaseTitle">① 먼저 일의 자리에서 뺄 수 있는 만큼 빼요</div>
-    <div id="firstTake" class="placeBox takeBox"><div class="dropHint">뺀 곳 · ${ones}개</div><div id="firstTakenItems" class="tenGrid"></div></div>
+    <div id="firstTake" class="placeBox takeBox" data-drop="yes"><div class="dropHint">뺀 곳 · ${ones}개</div><div id="firstTakenItems" class="tenGrid"></div></div>
     <div id="st" class="status">뺀 수: <b>0</b> / ${ones}</div>
 
     <div id="borrowStep"></div>
@@ -470,7 +470,7 @@ function borrowStage(){
     <div class="msg"><b>이제 아래의 새 배열판에서 ${b}개를 모두 뺄 곳으로 옮겨 보세요.</b><br>원래 빼려고 했던 수 <b>${b}개</b>를 그대로 빼면 돼요.</div>
     <div class="borrowPhaseTitle">② 10묶음을 푼 뒤 · ${b}개를 다시 빼요</div>
     <div id="secondAvailable" class="borrowAvailable"></div>
-    <div id="secondTake" class="placeBox takeBox borrowTakeNew"><div class="dropHint">뺀 곳 · ${b}개를 모두 옮겨요</div><div id="secondTakenItems" class="tenGrid"></div></div>
+    <div id="secondTake" class="placeBox takeBox borrowTakeNew" data-drop="yes"><div class="dropHint">뺀 곳 · ${b}개를 모두 옮겨요</div><div id="secondTakenItems" class="tenGrid"></div></div>
     <div id="secondStatus" class="status">뺀 수: <b>0</b> / ${b}</div>`;
 
     const avail=document.getElementById('secondAvailable');
