@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>수학놀이터 V16</title>
+<title>수학놀이터 V17</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;padding:0;overscroll-behavior:none}body{background:#f6f8fb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}
 button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px;margin:auto;padding:14px 12px 45px}.top{background:#ffe56b;border-radius:24px;padding:16px;text-align:center}.top h1{margin:0;font-size:29px}.sub{font-weight:700;margin-top:5px}.card{background:#fff;border-radius:24px;padding:16px;margin-top:12px;box-shadow:0 3px 14px #0001}
@@ -18,6 +18,9 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px
 .bundleSource{display:grid;grid-template-columns:repeat(5,minmax(52px,1fr));gap:8px;margin-top:8px}
 .tenBundle{min-height:68px;border:2px solid #e2e6ec;border-radius:14px;background:#fff;box-shadow:0 2px 8px #0001;font-size:36px;touch-action:none;user-select:none}
 .undo{margin-left:8px;border:0;border-radius:12px;padding:8px 11px;background:#eef4ff;font-weight:900}
+
+.subArea{display:flex;flex-direction:column;align-items:center;gap:8px}.subBox{width:100%;min-height:110px;border:2px solid #e2e6ec;border-radius:16px;padding:8px;box-sizing:border-box;background:#fff}.takeBox{border:3px dashed #b8c8e8;background:#f8fbff}.subArrow{font-size:28px}
+.carryEquation{text-align:center;font-size:28px;font-weight:900;margin:12px}.diagram{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}.diagram.single{display:block}.diagramCol{min-width:130px;text-align:center;padding:8px;border:2px solid #e2e6ec;border-radius:16px;background:#fff}.plus{font-size:34px;font-weight:900}.tenRow,.onesRow,.onesPool,.finalNumber{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center;min-height:48px}.tenPack{font-size:34px;display:inline-flex;align-items:center;justify-content:center}.one{font-size:28px;display:inline-flex}.carryWork,.resultDiagram{margin-top:10px;padding:10px;border-radius:14px;background:#fafbfc;border:2px solid #e2e6ec;text-align:center}.highlight{transform:scale(1.03)}.stepBtn{width:100%;padding:13px;border:0;border-radius:14px;background:#eef4ff;font-size:17px;font-weight:900;margin-top:10px}.resultTitle{font-weight:900;margin-bottom:6px}.resultText{margin-top:8px;font-size:18px}
 .object{width:58px;height:58px;border:3px solid #f0cf45;border-radius:15px;background:#fff;font-size:30px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.source{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#f0f3f7;padding:13px;border-radius:18px;min-height:80px;touch-action:none}
 .dropTarget{outline:4px dashed #e7d15a;outline-offset:-7px}.ghost{position:fixed;z-index:99999;pointer-events:none;margin:0;transform:scale(1.08);box-shadow:0 6px 18px #0003}
 .answerGrid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.ans{min-width:60px;border:0;border-radius:15px;background:#edf1f5;padding:12px;font-size:22px;font-weight:950}.wrong{background:#ffc8c8!important;text-decoration:line-through}.right{background:#bdebc6!important}
@@ -37,7 +40,7 @@ function bundle(e='🍎'){return '<div class="note" style="font-size:25px">🔟 
 function bundles(n,e='🍎'){let s='<div class="columns">';for(let i=0;i<n;i++)s+='<div class="col">'+bundle(e)+'</div>';return s+'</div>'}
 
 function menu(){
-app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터 V16</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
+app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터 V17</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
 '<button id="m1">① 수 세기</button><button id="m2">② 🔟 10의 개념</button><button id="m3">③ 덧셈</button><button id="m4">④ 뺄셈</button><button id="m5">⑤ 받아올림</button><button id="m6">⑥ 받아내림</button></div></div></div>';
 m1.onclick=countStage;m2.onclick=tenStage;m3.onclick=addStage;m4.onclick=subStage;m5.onclick=carryStage;m6.onclick=borrowStage;
 }
@@ -218,14 +221,107 @@ function addStage(){
 }
 
 /* ④ subtraction */
-function subStage(){let a=3+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*a),ans=a-b;app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">④ 뺄셈</h2><div class="msg">🍎 '+a+'개가 있어요. '+b+'개를 <b>하나씩 끌어서</b> 아래로 빼 보세요.</div><div id="subSrc" class="source" data-drop="yes"></div><div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">뺀 수: 0개</div></div></div>';back.onclick=menu;
-for(let i=0;i<a;i++){let x=document.createElement('button');x.className='object';x.textContent='🍎';makeDraggable(x,target=>{if(target.id==='subSrc'&&subSrc.querySelectorAll('.taken').length<b){x.classList.add('taken');x.style.opacity='.45';subSrc.appendChild(x);let n=subSrc.querySelectorAll('.taken').length;st.innerHTML='뺀 수: <b>'+n+'</b>개';if(n===b){st.innerHTML='🎉 '+b+'개를 뺐어요!';numericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>'+ans+'개가 남았네요!';setTimeout(()=>retry(subStage),1000)})}}});subSrc.appendChild(x)}}
+function subStage(){
+  let a=5+Math.floor(Math.random()*6), b=1+Math.floor(Math.random()*Math.min(5,a-1)), ans=a-b;
+  app.innerHTML=`<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">
+    <h2 style="text-align:center">④ 뺄셈</h2>
+    <div class="msg">🍎 ${a}개가 있어요.<br><b>${b}개를 아래의 「뺀 곳」으로 하나씩 옮겨 보세요.</b></div>
+    <div class="subArea">
+      <div class="subBox"><div class="label">처음 🍎 ${a}개</div><div id="subSrc" class="source"></div></div>
+      <div class="subArrow">⬇️</div>
+      <div id="subTaken" class="subBox takeBox" data-drop="yes"><div class="label">뺀 곳 · ${b}개</div><div id="takenItems" class="source"></div></div>
+    </div>
+    <div class="eq">${a} − ${b} = ?</div><div id="answers" class="answerGrid"></div>
+    <div id="st" class="status">뺀 수: <b>0</b> / ${b}</div>
+  </div></div>`;
+  back.onclick=menu;
+  for(let i=0;i<a;i++){
+    let x=document.createElement('button'); x.className='object'; x.textContent='🍎';
+    makeDraggable(x,target=>{
+      if(target.id==='subTaken' && takenItems.children.length<b){
+        takenItems.appendChild(x);
+        st.innerHTML='뺀 수: <b>'+takenItems.children.length+'</b> / '+b;
+        if(takenItems.children.length===b){
+          st.innerHTML='🎉 '+b+'개를 뺐어요! 이제 남은 수를 생각해 보세요.';
+          numericAnswers(ans,()=>{
+            st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>'+ans+'개가 남았네요!';
+            setTimeout(()=>retry(subStage),1000);
+          });
+        }
+      }
+    });
+    subSrc.appendChild(x);
+  }
+}
 
-/* ⑤ */
-function carryStage(){let a=15+Math.floor(Math.random()*4),b=5+Math.floor(Math.random()*4),ans=a+b;simpleAdvanced('⑤ 받아올림',a,b,'+',ans,'일의 자리에서 10개를 모으면 🔟 1묶음으로 바꿔요.',carryStage)}
-/* ⑥ */
-function borrowStage(){let a=21+Math.floor(Math.random()*8),b=6+Math.floor(Math.random()*4);if(b>=a%10)b=6;let ans=a-b;simpleAdvanced('⑥ 받아내림',a,b,'−',ans,'일의 자리가 부족하면 🔟 1묶음을 🍎 10개로 풀어낼 수 있어요.',borrowStage)}
-function simpleAdvanced(title,a,b,op,ans,msg,next){app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">'+title+'</h2><div class="columns"><div class="col"><h3>🍎 '+a+'</h3>'+board(a%10,'🍎')+'</div><div class="col"><h3>🍐 '+b+'</h3>'+board(b%10,'🍐')+'</div></div><div class="notice">'+msg+'</div><div class="eq">'+a+' '+op+' '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;numericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' '+op+' '+b+' = <b>'+ans+'</b>';setTimeout(()=>retry(next),1000)})}
+function carryStage(){
+  let a=15+Math.floor(Math.random()*5), b=5+Math.floor(Math.random()*5), ans=a+b;
+  let tensA=Math.floor(a/10), onesA=a%10, onesB=b, phase=0;
+  app.innerHTML=`<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">
+    <h2 style="text-align:center">⑤ 받아올림</h2>
+    <div class="msg">🍎 ${a} + 🍐 ${b}<br>일의 자리에서 10개가 모이면 <b>🔟 1묶음</b>으로 바꾸어 봅니다.</div>
+    <div class="carryEquation">${a} + ${b} = ?</div>
+    <div class="diagram">
+      <div class="diagramCol"><h3>🍎 ${a}</h3><div class="tenRow">${Array.from({length:tensA},()=>'<span class="tenPack">🔟</span>').join('')}</div><div class="onesRow">${Array.from({length:onesA},()=>'<span class="one">🍎</span>').join('')}</div></div>
+      <div class="plus">+</div>
+      <div class="diagramCol"><h3>🍐 ${b}</h3><div class="tenRow"></div><div class="onesRow">${Array.from({length:onesB},()=>'<span class="one">🍐</span>').join('')}</div></div>
+    </div>
+    <div id="carryWork" class="carryWork"><div class="label">일의 자리 합치기</div><div id="onesCombined" class="onesPool">${Array.from({length:onesA},()=>'<span class="one">🍎</span>').join('')}${Array.from({length:onesB},()=>'<span class="one">🍐</span>').join('')}</div></div>
+    <button id="carryNext" class="stepBtn">① 일의 자리 10개 모으기</button>
+    <div id="carryResult" class="resultDiagram"></div><div id="answers" class="answerGrid"></div>
+    <div id="st" class="status">도식을 보면서 한 단계씩 해 봅시다.</div>
+  </div></div>`;
+  back.onclick=menu;
+  carryNext.onclick=()=>{
+    if(phase===0){
+      phase=1; carryNext.textContent='② 10개를 🔟 1묶음으로 바꾸기';
+      st.innerHTML='일의 자리에 '+(onesA+onesB)+'개가 모였어요. <b>10개를 한 묶음</b>으로 바꿔 봅니다.';
+      onesCombined.classList.add('highlight');
+    }else if(phase===1){
+      phase=2; carryNext.textContent='③ 🔟 묶음을 십의 자리로 올리기';
+      let remain=onesA+onesB-10;
+      carryResult.innerHTML='<div class="resultTitle">10개가 🔟 1묶음으로 바뀌었어요!</div><div class="resultLine"><span class="tenPack">🔟</span>'+Array.from({length:remain},()=>'<span class="one">🍎</span>').join('')+'</div>';
+      st.innerHTML='🔟 1묶음은 십의 자리로 올라갑니다. 일의 자리에는 <b>'+remain+'개</b>가 남아요.';
+    }else{
+      phase=3; let newTens=tensA+1, remain=onesA+onesB-10;
+      carryResult.innerHTML='<div class="resultTitle">완성된 수</div><div class="finalNumber">'+Array.from({length:newTens},()=>'<span class="tenPack">🔟</span>').join('')+Array.from({length:remain},()=>'<span class="one">🍎</span>').join('')+'</div><div class="resultText">'+newTens+'개의 10묶음 + '+remain+'개 = <b>'+ans+'</b></div>';
+      carryNext.style.display='none';
+      st.innerHTML='🎉 '+a+' + '+b+' = <b>'+ans+'</b><br>10개가 모여 🔟 1묶음이 되어 받아올림했어요!';
+      numericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' + '+b+' = <b>'+ans+'</b>';setTimeout(()=>retry(carryStage),1000)});
+    }
+  };
+}
+
+function borrowStage(){
+  let a=21+Math.floor(Math.random()*8), b=6+Math.floor(Math.random()*4);
+  if(a%10===0) a+=1;
+  while(b>=a%10) b=1+Math.floor(Math.random()*Math.max(1,a%10));
+  const ans=a-b, tens=Math.floor(a/10), ones=a%10;
+  let phase=0;
+  app.innerHTML=`<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">
+    <h2 style="text-align:center">⑥ 받아내림</h2>
+    <div class="msg">${a} − ${b}<br>일의 자리에서 ${b}개를 빼기 어려워요.<br><b>🔟 1묶음을 1개씩 10개로 풀어 봅니다.</b></div>
+    <div class="diagram single"><div class="diagramCol"><h3>🍎 ${a}</h3><div class="tenRow">${Array.from({length:tens},()=>'<span class="tenPack">🔟</span>').join('')}</div><div class="onesRow">${Array.from({length:ones},()=>'<span class="one">🍎</span>').join('')}</div></div></div>
+    <div id="borrowResult" class="resultDiagram"></div><button id="borrowNext" class="stepBtn">① 10묶음 하나 풀기</button>
+    <div class="eq">${a} − ${b} = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">도식을 보면서 한 단계씩 해 봅시다.</div>
+  </div></div>`;
+  back.onclick=menu;
+  borrowNext.onclick=()=>{
+    if(phase===0){
+      phase=1; let newTens=tens-1, newOnes=ones+10;
+      borrowResult.innerHTML='<div class="resultTitle">🔟 1묶음을 풀었어요!</div><div class="tenRow">'+Array.from({length:newTens},()=>'<span class="tenPack">🔟</span>').join('')+'</div><div class="onesRow">'+Array.from({length:newOnes},()=>'<span class="one">🍎</span>').join('')+'</div>';
+      borrowNext.textContent='② 필요한 만큼 빼기';
+      st.innerHTML='이제 일의 자리에 '+newOnes+'개가 있어요. 여기서 '+b+'개를 뺄 수 있습니다.';
+    }else{
+      phase=2; let newTens=tens-1, newOnes=ones+10-b;
+      borrowResult.innerHTML='<div class="resultTitle">빼고 남은 수</div><div class="tenRow">'+Array.from({length:newTens},()=>'<span class="tenPack">🔟</span>').join('')+'</div><div class="onesRow">'+Array.from({length:newOnes},()=>'<span class="one">🍎</span>').join('')+'</div><div class="resultText">'+newTens+'개의 10묶음 + '+newOnes+'개 = <b>'+ans+'</b></div>';
+      borrowNext.style.display='none';
+      st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b><br>10묶음을 풀어서 '+b+'개를 뺐어요!';
+      numericAnswers(ans,()=>{st.innerHTML='🎉 '+a+' − '+b+' = <b>'+ans+'</b>';setTimeout(()=>retry(borrowStage),1000)});
+    }
+  };
+}
+
 function numericAnswers(correct,done){let ar=[correct];while(ar.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!ar.includes(x))ar.push(x)}ar.sort(()=>Math.random()-.5);ar.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(x===correct){q.classList.add('right');q.disabled=true;done()}else{q.classList.add('wrong');q.disabled=true;st.innerHTML='🌱 틀렸어요. 빨간 답은 다시 고르지 않아도 돼요.'}};answers.appendChild(q)})}
 function retry(next){if(confirm('같은 단계의 새로운 문제를 한 번 더 풀어 볼까요?'))next();else menu()}
 menu();
