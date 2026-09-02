@@ -67,6 +67,32 @@ function board(n,e='🍎',rows=2){n=Math.max(0,n);let s='<div class="board">';fo
 function bundle(e='🍎'){return '<div class="note" style="font-size:25px">🔟 10개 묶음</div>'+board(10,e)}
 function bundles(n,e='🍎'){let s='<div class="columns">';for(let i=0;i<n;i++)s+='<div class="col">'+bundle(e)+'</div>';return s+'</div>'}
 
+function numericAnswers(correct,onCorrect){
+  const area=document.getElementById('answers');
+  if(!area)return;
+  const set=new Set([correct]);
+  while(set.size<3){
+    const d=1+Math.floor(Math.random()*4);
+    const v=Math.random()<0.5?correct-d:correct+d;
+    if(v>=0)set.add(v);
+  }
+  const choices=[...set].sort(()=>Math.random()-0.5);
+  area.innerHTML=choices.map(v=>`<button class="ans" data-value="${v}">${v}</button>`).join('');
+  area.querySelectorAll('.ans').forEach(btn=>{
+    btn.onclick=()=>{
+      const v=Number(btn.dataset.value);
+      if(v===correct){
+        btn.classList.add('right');
+        area.querySelectorAll('.ans').forEach(b=>b.disabled=true);
+        onCorrect();
+      }else{
+        btn.classList.add('wrong');
+        btn.disabled=true;
+      }
+    };
+  });
+}
+
 function menu(){
 app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
 '<button id="m1">① 수 세기</button><button id="m2">② 🔟 10의 개념</button><button id="m3">③ 덧셈</button><button id="m4">④ 뺄셈</button><button id="m5">⑤ 받아올림</button><button id="m6">⑥ 받아내림</button></div></div></div>';
@@ -102,7 +128,7 @@ function tenStage(){
   app.innerHTML=`<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">
     <h2 style="text-align:center">② 🔟 10의 개념</h2><div class="carryEquation">🎯 ${target} 만들기</div>
     <div id="tenGuide" class="msg">먼저 <b>${base}개</b>가 있어요.<br><b>${firstNeed}개</b>를 더 옮겨 10칸을 채워 보세요.</div>
-    <div id="tenConceptBoard" class="tenConceptBoard"></div>
+    <div id="tenConceptBoard" class="tenConceptBoard" data-drop="yes"></div>
     <div class="label">부족한 사물 · ${firstNeed}개</div><div id="tenObjSrc" class="bundleSource"></div>
     <div id="tenStatus" class="status">빈칸: <b>${firstNeed}칸</b></div><div id="tenNextArea"></div>
   </div></div>`;
@@ -110,13 +136,36 @@ function tenStage(){
   const board=document.getElementById('tenConceptBoard');
   function drawBoard(extra=0){board.innerHTML='<div class="row">'+Array.from({length:10},(_,i)=>i<base?'<div class="cell filled">🍎</div>':i<base+extra?'<div class="cell filled added">🍐</div>':'<div class="cell empty">&nbsp;</div>').join('')+'</div>'}
   function completeTen(){
-    tenGuide.innerHTML='🎉 10칸을 모두 채웠어요! <b>이렇게 만든 10은 🔟 1묶음</b>으로 생각할 수 있어요.';
-    tenStatus.innerHTML='🎉 10개 완성!'; document.getElementById('tenObjSrc').style.display='none';
-    const bundles=Math.floor(target/10), remain=target%10;
-    tenNextArea.innerHTML='<div class="transformClean"><div class="resultTitle">🔟 10개가 모이면 1묶음이에요</div><div class="finalNumberVisual"><div class="numberPart"><div class="big">🔟</div><div class="small">10개 = 1묶음</div></div><div class="plus">+</div><div class="numberPart"><div class="big">'+remain+'개</div><div class="small">남은 사물</div></div></div></div><div class="msg">이제 '+bundles+'개의 🔟 묶음을 옮겨 <b>'+target+'</b>을 만들어 보세요.</div><div id="bundleBoard" class="bundleBoard"></div><div id="bundleSrc" class="bundleSource"></div><div id="bundleStatus" class="status">🔟 묶음 0개 / '+bundles+'개</div><div id="answers" class="answerGrid" style="display:none"></div>';
+    tenGuide.innerHTML='🎉 10칸을 모두 채웠어요! <b>10개가 되었어요.</b><br>이 10개를 🔟 1묶음으로 생각해 볼까요?';
+    tenStatus.innerHTML='🎉 10개 완성!';
+    document.getElementById('tenObjSrc').style.display='none';
+    const bundlesNeeded=Math.floor(target/10);
+    const remain=target%10;
+    if(bundlesNeeded===1){
+      tenNextArea.innerHTML='<div class="transformClean"><div class="resultTitle">🔟 10개 = 1묶음</div><div class="finalNumberVisual"><div class="numberPart"><div class="big">🔟</div><div class="small">10개를 한 묶음으로 만들었어요</div></div></div></div><div id="answers" class="answerGrid"></div><div class="msg">10을 잘 만들었어요! 몇일까요?</div>';
+      numericAnswers(target,()=>{tenGuide.innerHTML='🎉 10을 잘 만들었어요!';setTimeout(()=>retry(tenStage),500)});
+      return;
+    }
+    const extra=bundlesNeeded-1;
+    tenNextArea.innerHTML='<div class="transformClean"><div class="resultTitle">🔟 방금 만든 10은 1묶음이에요.</div><div class="finalNumberVisual"><div class="numberPart"><div class="big">🔟</div><div class="small">먼저 만든 10</div></div><div class="plus">+</div><div class="numberPart"><div class="big">'+remain+'개</div><div class="small">남는 사물</div></div></div></div><div class="msg">이제 🔟 묶음 <b>'+extra+'개</b>를 더 옮겨 <b>'+target+'</b>을 만들어 보세요.</div><div id="bundleBoard" class="bundleBoard" data-drop="yes"></div><div id="bundleSrc" class="bundleSource"></div><div id="bundleStatus" class="status">이미 만든 🔟 1개 + 옮긴 묶음 0개 / '+extra+'개</div><div id="answers" class="answerGrid" style="display:none"></div>';
     let placed=0; const bb=document.getElementById('bundleBoard'), bs=document.getElementById('bundleSrc');
-    bb.innerHTML=Array.from({length:bundles},()=>'<div class="bundleSlot"></div>').join('');
-    for(let i=0;i<bundles;i++){let x=document.createElement('button');x.className='tenBundle';x.textContent='🔟';makeDraggable(x,t=>{if(t.id!=='bundleBoard'||placed>=bundles)return;let slot=bb.querySelector('.bundleSlot:not(.filled)');if(!slot)return;slot.textContent='🔟';slot.classList.add('filled');placed++;x.remove();bundleStatus.innerHTML='🔟 묶음 <b>'+placed+'</b>개 / '+bundles+'개';if(placed===bundles){tenGuide.innerHTML='🎉 다 옮겨서 <b>'+target+'</b>을 잘 만들었어요!';bundleStatus.innerHTML='🎉 '+target+' 완성!';const area=document.getElementById('answers');area.style.display='grid';numericAnswers(target,()=>{bundleStatus.innerHTML='🎉 정답이에요!';setTimeout(()=>retry(tenStage),500)})}});bs.appendChild(x)}
+    bb.innerHTML='<div class="bundleSlot filled">🔟</div>'+Array.from({length:extra},()=>'<div class="bundleSlot"></div>').join('');
+    for(let i=0;i<extra;i++){
+      let x=document.createElement('button');x.className='tenBundle';x.textContent='🔟';
+      makeDraggable(x,t=>{
+        if(t.id!=='bundleBoard'||placed>=extra)return;
+        let slot=bb.querySelector('.bundleSlot:not(.filled)');if(!slot)return;
+        slot.textContent='🔟';slot.classList.add('filled');placed++;x.remove();
+        bundleStatus.innerHTML='이미 만든 🔟 1개 + 옮긴 묶음 <b>'+placed+'</b>개 / '+extra+'개';
+        if(placed===extra){
+          tenGuide.innerHTML='🎉 다 옮겨서 <b>'+target+'</b>을 잘 만들었어요!';
+          bundleStatus.innerHTML='🎉 '+target+' 완성!';
+          const area=document.getElementById('answers');area.style.display='flex';
+          numericAnswers(target,()=>{bundleStatus.innerHTML='🎉 정답이에요!';setTimeout(()=>retry(tenStage),500)});
+        }
+      });
+      bs.appendChild(x);
+    }
   }
   drawBoard(); const src=document.getElementById('tenObjSrc');
   for(let i=0;i<firstNeed;i++){let x=document.createElement('button');x.className='object addedObject';x.textContent='🍐';makeDraggable(x,t=>{if(t.id!=='tenConceptBoard'||moved>=firstNeed)return;moved++;x.remove();drawBoard(moved);tenStatus.innerHTML='빈칸: <b>'+(firstNeed-moved)+'칸</b>';if(moved===firstNeed)completeTen()});src.appendChild(x)}
