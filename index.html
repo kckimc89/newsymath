@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>수학놀이터 V24</title>
+<title>수학놀이터</title>
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
 <style>
 *{box-sizing:border-box}html,body{margin:0;padding:0;overscroll-behavior:none}body{background:#f6f8fb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}
 button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px;margin:auto;padding:14px 12px 45px}.top{background:#ffe56b;border-radius:24px;padding:16px;text-align:center}.top h1{margin:0;font-size:29px}.sub{font-weight:700;margin-top:5px}.card{background:#fff;border-radius:24px;padding:16px;margin-top:12px;box-shadow:0 3px 14px #0001}
@@ -37,10 +39,10 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px
 .finalDiagram{display:flex;justify-content:center;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:8px}
 .finalCol{min-width:125px;text-align:center;padding:8px;border:2px solid #e2e6ec;border-radius:15px;background:#fff}
 .finalCol .tenRow,.finalCol .onesRow{min-height:54px}
-.hiddenAnswerNote{font-size:17px;font-weight:900;text-align:center;margin-top:9px;background:#fff8df;padding:10px;border-radius:14px}
+.countBoard{max-width:650px}.brokenTenVisual{background:#fff3d6;border:3px solid #e6a33a;border-radius:14px;padding:8px}.newTakeArea{margin-top:10px;background:#f8fbff;border:3px dashed #8ca8dc}.hiddenAnswerNote{font-size:17px;font-weight:900;text-align:center;margin-top:9px;background:#fff8df;padding:10px;border-radius:14px}
 
 @media(max-width:520px){.top h1{font-size:25px}.cell{height:43px}.object{width:52px;height:52px;font-size:28px}.columns{grid-template-columns:1fr}.ans{min-width:55px}}
-.tenGrid{display:grid;grid-template-columns:repeat(5,minmax(42px,1fr));gap:5px;max-width:320px;margin:7px auto}.previewGrid{max-width:360px}.moveObj{touch-action:none;user-select:none}.bundleDrag{touch-action:none;user-select:none}.carryInteract,.borrowInteract{margin-top:12px}.placeBox{padding:10px}.finalDiagram{display:flex;justify-content:center;align-items:flex-end;gap:12px;flex-wrap:wrap}.finalCol{min-width:125px;text-align:center;padding:8px;border:2px solid #e2e6ec;border-radius:15px;background:#fff}.hiddenAnswerNote{font-size:17px;font-weight:900;text-align:center;margin-top:8px;background:#fff8df;padding:9px;border-radius:12px}.transformBox{margin-top:10px;padding:10px;border-radius:14px;background:#fafbfc;border:2px solid #e2e6ec;text-align:center}.resultTitle{font-weight:900;margin-bottom:7px}.previewGrid .cell{height:45px;font-size:25px}.tenGrid .cell{height:45px;font-size:25px}.finishChoice{margin-top:14px;padding:18px;border-radius:22px;background:#fff8df;border:3px solid #ead36a;text-align:center}.finishTitle{font-size:26px;font-weight:950}.finishText{font-size:19px;font-weight:850;margin:7px 0 14px}.finishButtons{display:grid;grid-template-columns:1fr 1fr;gap:10px}.finishBtn{border:0;border-radius:18px;padding:17px 10px;font-size:20px;font-weight:950}.transformClean{padding:12px;border-radius:18px;background:#fff;border:2px solid #e2e6ec;text-align:center}.finalNumberVisual{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;margin:8px 0}.numberPart{min-width:135px;padding:10px;border-radius:16px;border:2px solid #e2e6ec;background:#fafbfc;text-align:center}.numberPart .big{font-size:42px;font-weight:950}.numberPart .small{font-weight:850;margin-top:3px}
+.tenGrid{display:grid;grid-template-columns:repeat(5,minmax(42px,1fr));gap:5px;max-width:320px;margin:7px auto}.previewGrid{max-width:360px}.moveObj{touch-action:none;user-select:none}.bundleDrag{touch-action:none;user-select:none}.carryInteract,.borrowInteract{margin-top:12px}.placeBox{padding:10px}.finalDiagram{display:flex;justify-content:center;align-items:flex-end;gap:12px;flex-wrap:wrap}.finalCol{min-width:125px;text-align:center;padding:8px;border:2px solid #e2e6ec;border-radius:15px;background:#fff}.countBoard{max-width:650px}.brokenTenVisual{background:#fff3d6;border:3px solid #e6a33a;border-radius:14px;padding:8px}.newTakeArea{margin-top:10px;background:#f8fbff;border:3px dashed #8ca8dc}.hiddenAnswerNote{font-size:17px;font-weight:900;text-align:center;margin-top:8px;background:#fff8df;padding:9px;border-radius:12px}.transformBox{margin-top:10px;padding:10px;border-radius:14px;background:#fafbfc;border:2px solid #e2e6ec;text-align:center}.resultTitle{font-weight:900;margin-bottom:7px}.previewGrid .cell{height:45px;font-size:25px}.tenGrid .cell{height:45px;font-size:25px}.finishChoice{margin-top:14px;padding:18px;border-radius:22px;background:#fff8df;border:3px solid #ead36a;text-align:center}.finishTitle{font-size:26px;font-weight:950}.finishText{font-size:19px;font-weight:850;margin:7px 0 14px}.finishButtons{display:grid;grid-template-columns:1fr 1fr;gap:10px}.finishBtn{border:0;border-radius:18px;padding:17px 10px;font-size:20px;font-weight:950}.transformClean{padding:12px;border-radius:18px;background:#fff;border:2px solid #e2e6ec;text-align:center}.finalNumberVisual{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;margin:8px 0}.numberPart{min-width:135px;padding:10px;border-radius:16px;border:2px solid #e2e6ec;background:#fafbfc;text-align:center}.numberPart .big{font-size:42px;font-weight:950}.numberPart .small{font-weight:850;margin-top:3px}
 .tenBundlePreview{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:10px 0}
 .bundleTenVisual{display:grid;grid-template-columns:repeat(5,42px);gap:5px;padding:8px;border:3px solid #f0cf45;border-radius:14px;background:#fff8df}
 .bundleArrow{font-size:32px;font-weight:900}
@@ -85,86 +87,76 @@ document.addEventListener('touchmove',move,{passive:false});document.addEventLis
 }
 
 /* ① */
-function countStage(){let n=1+Math.floor(Math.random()*9);app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">① 몇 개인지 세어 보세요</h2><div class="source">'+Array.from({length:n},(_,i)=>'<span style="font-size:38px">'+['🍎','🍐','🍊','🍓'][i%4]+'</span>').join('')+'</div><div class="eq">몇 개일까요?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';back.onclick=menu;numericAnswers(n,()=>{st.innerHTML='🎉 '+n+'개예요!';setTimeout(()=>retry(countStage),800)})}
+function countStage(){
+  const n=1+Math.floor(Math.random()*20);
+  const emojis=['🍎','🍐','🍊','🍓'];
+  const rows=Math.ceil(n/5);
+  let cells='';
+  for(let r=0;r<rows;r++){
+    cells+='<div class="row">';
+    for(let c=0;c<5;c++){
+      const i=r*5+c;
+      cells+='<div class="cell">'+(i<n?emojis[i%4]:'')+'</div>';
+    }
+    cells+='</div>';
+  }
+  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">① 몇 개인지 세어 보세요</h2>'+
+    '<div class="msg">5개씩 줄을 맞춰 놓았어요.<br>한 줄씩 보면서 몇 개인지 생각해 보세요.</div>'+
+    '<div class="board countBoard">'+cells+'</div>'+
+    '<div class="eq">몇 개일까요?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">답을 골라 보세요.</div></div></div>';
+  back.onclick=menu;
+  numericAnswers(n,()=>{st.innerHTML='🎉 '+n+'개예요! 5개씩 묶어 보니 한눈에 보이지요?';setTimeout(()=>retry(countStage),600)})
+}
 
 /* ② */
 function tenStage(){
-  const nums=[10,20,30,40,50,60,70,80,90,100];
-  const choices=nums.filter(n=>n!==G.last);
-  const target=choices[Math.floor(Math.random()*choices.length)];
-  G={
-    last:target,
-    target,
-    placed:0,
-    available:target/10
-  };
+  const target=[10,20,30][Math.floor(Math.random()*3)];
+  const startNum=1+Math.floor(Math.random()*9);
+  G={target,startNum,placedLoose:0,looseNeed:10-startNum,bundlesPlaced:0,bundlesTotal:Math.floor(target/10)-1,phase:'make10'};
   renderTen();
 }
 
 function renderTen(){
-  const need=G.target/10;
-  const placed=G.placed;
-  const available=G.available;
-
-  app.innerHTML=`
-    <div class="top">
-      <h1>② 10씩 묶어 큰 수 만들기</h1>
-      <div class="sub">10개 묶음으로 ${G.target}을 만들어 보세요</div>
-    </div>
-    <div class="card">
-      <button class="back" onclick="menu()">← 메뉴</button>
-      <div class="question">🎯 목표: <b>${G.target}</b></div>
-
-      <div class="hint">
-        <b>10개 묶음 하나 = 10</b><br>
-        묶음을 옮기면 목표판에 왼쪽부터 채워집니다.
-      </div>
-
-      <div class="label">목표판 · 10개 묶음 ${need}칸</div>
-      <div id="tenDest" class="bundleBoard" data-drop="yes">
-        ${Array.from({length:need},(_,i)=>`
-          <div class="bundleSlot">${i<placed?'🔟':''}</div>
-        `).join('')}
-      </div>
-
-      <div class="status">
-        현재 <b>${placed*10}</b> / ${G.target}
-        ${placed>0 ? `<button class="undo" id="undoTen">↩️ 하나 되돌리기</button>` : ''}
-      </div>
-
-      <div class="label">옮길 수 있는 묶음 · ${available}개</div>
-      <div id="tenSrc" class="bundleSource"></div>
-      <div id="tenMsg" class="msg">
-        ${placed===need ? `🎉 다 옮겨서 ${G.target}을 잘 만들었어요!` : '🔟 묶음을 목표판으로 옮겨 보세요.'}
-      </div>
-    </div>`;
-
-  const srcEl=document.getElementById('tenSrc');
-  for(let i=0;i<available;i++){
-    const x=document.createElement('button');
-    x.className='tenBundle';
-    x.textContent='🔟';
-    x.setAttribute('aria-label','10개 묶음');
-    makeDraggable(x,targetEl=>{
-      if(targetEl && targetEl.id==='tenDest' && G.available>0 && G.placed<need){
-        G.available--;
-        G.placed++;
-        renderTen();
-      }
-    });
-    srcEl.appendChild(x);
+  const Gx=G;
+  if(Gx.phase==='make10'){
+    const need=Gx.looseNeed;
+    app.innerHTML=`<div class="app"><button class="back" id="back">← 메뉴</button><div class="card">
+      <h2 style="text-align:center">② 🔟 10의 개념</h2>
+      <div class="carryEquation">${Gx.startNum} + ? = 10</div>
+      <div class="msg">먼저 🍎 ${Gx.startNum}개를 보고,<br><b>10개가 되려면 몇 개가 더 필요한지</b> 생각해 보세요.</div>
+      <div class="board countBoard"><div class="row">${Array.from({length:10},(_,i)=>'<div class="cell">'+(i<Gx.startNum?'🍎':'')+'</div>').join('')}</div></div>
+      <div class="columns"><div class="col"><h3>현재 ${Gx.startNum}개</h3><div id="tenLooseSrc" class="miniSource"></div></div><div class="col"><h3>10이 되려면 ${need}개 더</h3><div id="tenLooseDest" class="miniSource placeBox" data-drop="yes"></div></div></div>
+      <div id="tenGuide" class="msg">🍎을 ${need}개 더 옮겨서 10을 만들어 보세요.</div>
+      <div id="tenResult" class="resultDiagram"></div>
+      <div id="st" class="status">옮긴 수: <b>0</b> / ${need}</div>
+    </div></div>`;
+    back.onclick=menu;
+    for(let i=0;i<need;i++){const x=document.createElement('button');x.className='object';x.textContent='🍎';makeDraggable(x,t=>{if(t.id!=='tenLooseDest')return;x.remove();Gx.placedLoose++;st.innerHTML='옮긴 수: <b>'+Gx.placedLoose+'</b> / '+need;if(Gx.placedLoose===need){finishMake10()}});tenLooseSrc.appendChild(x)}
+    return;
   }
 
-  const undo=document.getElementById('undoTen');
-  if(undo){
-    undo.onclick=()=>{
-      if(G.placed>0){
-        G.placed--;
-        G.available++;
-        renderTen();
-      }
-    };
+  app.innerHTML=`<div class="app"><button class="back" id="back">← 메뉴</button><div class="card">
+    <h2 style="text-align:center">② 🔟 10의 개념</h2>
+    <div class="carryEquation">${Gx.target} 만들기</div>
+    <div class="msg"><b>10개 = 🔟 1묶음</b><br>만든 10은 묶음으로 생각하고, 필요한 만큼 더해 봐요.</div>
+    <div class="placeRow"><div class="placeBox"><b>만든 수</b><div id="tenDest" class="tenRow" data-drop="yes"></div><div id="tenDestLabel">0</div></div></div>
+    <div id="tenBundleSrc" class="bundleSource"></div>
+    <div id="tenGuide" class="msg">🔟 묶음을 목표판으로 옮겨 보세요.</div>
+    <div id="st" class="status">0 / ${Gx.target}</div>
+  </div></div>`;
+  back.onclick=menu;
+  for(let i=0;i<Gx.bundlesTotal;i++){
+    const x=document.createElement('button');x.className='tenBundle';x.textContent='🔟';
+    makeDraggable(x,t=>{if(t.id!=='tenDest')return;x.remove();Gx.bundlesPlaced++;const made=10+Gx.bundlesPlaced*10;tenDest.innerHTML=Array.from({length:1+Gx.bundlesPlaced},()=>'<span class="tenPack">🔟</span>').join('');tenDestLabel.textContent=made;st.innerHTML=made+' / '+Gx.target;if(Gx.bundlesPlaced===Gx.bundlesTotal){tenGuide.innerHTML='🎉 다 옮겨서 '+Gx.target+'을 잘 만들었어요!';setTimeout(()=>retry(tenStage),500)}});tenBundleSrc.appendChild(x)
   }
+  tenDest.innerHTML='<span class="tenPack">🔟</span>';tenDestLabel.textContent='10';st.innerHTML='10 / '+Gx.target;
+  if(Gx.bundlesTotal===0){tenGuide.innerHTML='🎉 다 옮겨서 10을 잘 만들었어요!';setTimeout(()=>retry(tenStage),500)}
+} 
+
+function finishMake10(){
+  G.phase='makeBundles';
+  G.bundlesPlaced=0;
+  renderTen();
 }
 function addStage(){
   let a=5+Math.floor(Math.random()*4), b=5+Math.floor(Math.random()*4), total=a+b;
@@ -471,59 +463,24 @@ function borrowStage(){
     borrowNext.style.display='none';
     additionalNeeded=b-ones;
     borrowResult.innerHTML=
-      '<div class="resultTitle">🔟 십의 자리의 10묶음 하나를 풀어요</div>'+
-      '<div class="hiddenAnswerNote">일의 자리의 '+ones+'개는 이미 뺐어요. '+b+'개를 빼려면 <b>'+additionalNeeded+'개</b>가 더 필요해요.</div>'+ 
+      '<div class="resultTitle">🔟 10묶음 하나를 풀어 볼까요?</div>'+ 
+      '<div class="hiddenAnswerNote">더 뺄 수가 없으니 <b>10묶음 하나를 풀어</b> 일의 자리의 물건을 10개 더 만들어 봐요.</div>'+ 
       '<div class="placeRow">'+
-        '<div class="placeBox"><b>옮길 10묶음</b><div id="borrowBundleDragBox" class="miniSource"></div></div>'+ 
-        '<div id="breakArea" class="placeBox" data-drop="yes"><div class="dropHint">⬇️ 여기에 🔟을 놓으면 10개의 🍎로 풀려요</div><div id="breakBundleBox" class="miniSource"></div></div>'+ 
-      '</div>';
-
-    const bundleBtn=document.createElement('button');
-    bundleBtn.className='bundleDrag'; bundleBtn.textContent='🔟';
-    borrowBundleDragBox.appendChild(bundleBtn);
-    setGuide('좋아요! 이제 십의 자리에서 <b>🔟 1묶음</b>을 가져와서 10개의 🍎로 풀어 봐요.');
-
-    makeDraggable(bundleBtn,target=>{
-      if(target.id!=='breakArea') return;
-      bundleBtn.remove();
-
-      // 10묶음 1개가 실제로 십의 자리에서 사라집니다.
-      const newTens=tens-1;
-      borrowTensInitial.innerHTML=packs(newTens);
-      borrowTensInitial.parentElement.querySelector('.smallNote').textContent=newTens+'개의 10묶음 = '+(newTens*10);
-
-      // 이미 뺀 ones개는 그대로 두고, 새로 생긴 10개만 드래그할 수 있게 합니다.
-      borrowResult.innerHTML=
-        '<div class="resultTitle">🔟 1묶음을 풀었어요!</div>'+
-        '<div class="arrowBig">🔟 → 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎</div>'+ 
-        '<div class="placeRow">'+
-          '<div class="placeBox"><b>십의 자리</b><div class="tenRow">'+packs(newTens)+'</div><div>'+newTens+'개의 10묶음</div></div>'+ 
-          '<div class="placeBox"><b>일의 자리</b><div class="tenGrid">'+grid(ones+10)+'</div><div>'+ones+' + 10 = '+(ones+10)+'개</div></div>'+ 
-        '</div>'+ 
-        '<div class="hiddenAnswerNote"><b>수의 모습이 바뀌었어요.</b> 십의 자리의 🔟은 1개 줄고, 일의 자리는 '+ones+'개에서 '+(ones+10)+'개가 되었어요.</div>';
-
-      // 새로 생긴 10개만 드래그 source로 사용합니다. 기존에 뺀 ones개는 taken 영역에 남아 있습니다.
-      borrowOneSrc.innerHTML=grid(10);
-      borrowOneNote.textContent='새로 생긴 10개 중 '+additionalNeeded+'개를 더 빼요';
-      phase=2;
-      updateTakenStatus();
-      setGuide('좋아요! 이제 새로 생긴 10개 중 <b>'+additionalNeeded+'개</b>를 뺀 곳으로 옮겨요.<br>이미 뺀 '+ones+'개와 합쳐서 '+b+'개가 되면 끝이에요.');
-
-      borrowOneSrc.querySelectorAll('.cell').forEach(x=>{
-        x.classList.add('moveObj');
-        makeDraggable(x,target2=>{
-          if(target2.id!=='borrowTaken' || phase!==2) return;
-          if(alreadyTaken>=b) return;
-          borrowTakenItems.appendChild(x);
-          alreadyTaken++;
-          updateTakenStatus();
-          if(alreadyTaken===b){ finishBorrow(); }
-          else if(alreadyTaken===ones){
-            setGuide('좋아요! '+ones+'개를 먼저 뺐어요. 이제 '+additionalNeeded+'개를 더 옮겨요.');
-          }
-        });
-      });
-    });
+        '<div class="placeBox"><b>십의 자리</b><div class="tenRow">'+packs(tens-1)+'</div><div>'+(tens-1)+'개의 10묶음</div></div>'+ 
+        '<div class="placeBox"><b>풀어진 10개</b><div id="breakBundleBox" class="tenGrid brokenTenVisual">'+grid(10)+'</div><div>🔟 1묶음 → 🍎 10개</div></div>'+ 
+      '</div>'+
+      '<div id="borrowMoreArea" class="placeBox newTakeArea" data-drop="yes"><div class="dropHint">이제는 뺄 수 있겠지요. 부족한 '+additionalNeeded+'개를 이곳으로 옮겨 보세요.</div><div id="borrowNewTaken" class="tenGrid"></div></div>';
+    borrowOneSrc.innerHTML='';
+    borrowOneNote.textContent='풀어진 10개 중 '+additionalNeeded+'개를 더 빼요';
+    phase=2;
+    updateTakenStatus();
+    setGuide('👏 10묶음 하나를 풀었어요! 십의 자리는 1묶음 줄고, 일의 자리에 10개가 생겼어요.<br><b>이제는 뺄 수 있겠지요. '+additionalNeeded+'개를 더 빼보세요.</b>');
+    const newTaken=document.getElementById('borrowNewTaken');
+    for(let i=0;i<10;i++){
+      const x=document.createElement('button');x.className='moveObj';x.textContent='🍎';
+      makeDraggable(x,target=>{if(target.id!=='borrowMoreArea'||phase!==2)return;if(alreadyTaken>=b)return;x.remove();newTaken.appendChild(x);alreadyTaken++;updateTakenStatus();if(alreadyTaken===b)finishBorrow()});
+      breakBundleBox.appendChild(x);
+    }
   }
 
   // 처음에는 실제 일의 자리 물건을 옮깁니다.
