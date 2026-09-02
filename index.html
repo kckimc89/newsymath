@@ -438,7 +438,7 @@ function borrowStage(){
   if(a%10===0) a+=1;
   const ans=a-b, tens=Math.floor(a/10), ones=a%10;
   const needBorrow=b>ones;
-  let moved=0, phase=0, broken=false;
+  let phase=0, alreadyTaken=0, additionalNeeded=0;
 
   const grid=(n,emoji='🍎')=>Array.from({length:n},()=>`<span class="cell">${emoji}</span>`).join('');
   const packs=(n)=>Array.from({length:n},()=>'<span class="tenPack">🔟</span>').join('');
@@ -452,7 +452,7 @@ function borrowStage(){
         <h3>처음 ${a}를 십의 자리와 일의 자리로 나타내요</h3>
         <div class="placeRow">
           <div class="placeBox"><b>십의 자리</b><div id="borrowTensInitial" class="tenRow">${packs(tens)}</div><div class="smallNote">${tens}개의 10묶음 = ${tens*10}</div></div>
-          <div class="placeBox"><b>일의 자리</b><div id="borrowOneSrc" class="tenGrid previewGrid">${grid(ones)}</div><div class="smallNote">${ones}개</div></div>
+          <div class="placeBox"><b>일의 자리</b><div id="borrowOneSrc" class="tenGrid previewGrid">${grid(ones)}</div><div id="borrowOneNote" class="smallNote">${ones}개</div></div>
         </div>
       </div>
     </div>
@@ -465,7 +465,7 @@ function borrowStage(){
         </div>
       </div>
       <div id="borrowGuide" class="msg"></div>
-      <button id="borrowNext" class="stepBtn">① 일의 자리에서 빼 보기</button>
+      <button id="borrowNext" class="stepBtn">① 일의 자리에서 있는 만큼 빼기</button>
     </div>
 
     <div id="borrowResult" class="resultDiagram"></div>
@@ -476,123 +476,138 @@ function borrowStage(){
 
   back.onclick=menu;
 
-  function renderOneSource(count){
+  function setGuide(html){ borrowGuide.innerHTML=html; }
+
+  function attachDrags(count, onMoved){
     borrowOneSrc.innerHTML=grid(count);
     borrowOneSrc.querySelectorAll('.cell').forEach(x=>{
       x.classList.add('moveObj');
       makeDraggable(x,target=>{
-        if(target.id!=='borrowTaken' || moved>=b) return;
-        moved++;
+        if(target.id!=='borrowTaken') return;
         borrowTakenItems.appendChild(x);
-        st.innerHTML='뺀 수: <b>'+moved+'</b> / '+b;
-        if(moved===b){
-          if(!needBorrow) finishDirect();
-          else if(phase===2) finishBorrowed(ones+10, tens-1);
-        }else if(needBorrow && phase===0 && moved===ones){
-          borrowGuide.innerHTML='👏 일의 자리의 '+ones+'개를 먼저 뺐어요.<br><b>'+b+'개를 모두 빼려면 🔟 10묶음 하나를 풀어야 해요.</b>';
-          borrowNext.style.display='block';
-          borrowNext.textContent='② 🔟 10묶음 하나 가져오기';
-          borrowNext.disabled=false;
-          st.innerHTML='일의 자리의 '+ones+'개를 모두 뺐어요. 이제 10묶음을 풀어 봐요.';
-        }
+        onMoved();
       });
     });
   }
 
-  function finishBorrowed(currentOnes,currentTens){
+  function updateTakenStatus(){
+    st.innerHTML='뺀 수: <b>'+alreadyTaken+'</b> / '+b;
+  }
+
+  function finishBorrow(){
     phase=3;
-    const remain=currentOnes-b;
+    const currentTens=tens-1;
+    const remain=(ones+10)-b;
     borrowResult.innerHTML=
-      '<div class="resultTitle">🎉 이제 일의 자리에서 '+b+'개를 뺐어요!</div>'+
+      '<div class="resultTitle">🎉 받아내림을 해서 '+b+'개를 모두 뺐어요!</div>'+
       '<div class="placeRow">'+
         '<div class="placeBox"><b>십의 자리</b><div class="tenRow">'+packs(currentTens)+'</div><div>'+currentTens+'개의 10묶음</div></div>'+ 
         '<div class="placeBox"><b>일의 자리</b><div class="tenGrid">'+grid(remain)+'</div><div>'+remain+'개가 남았어요</div></div>'+ 
       '</div>'+ 
-      '<div class="hiddenAnswerNote"><b>받아내림을 했어요!</b><br>🔟 1묶음을 풀어서 일의 자리에 10개를 더한 다음, 필요한 '+b+'개를 뺐어요.</div>';
+      '<div class="hiddenAnswerNote"><b>받아내림을 했어요!</b><br>🔟 1묶음을 풀어서 일의 자리에 10개를 만들고, 이미 뺀 '+ones+'개에 이어 '+additionalNeeded+'개를 더 뺐어요.</div>';
     borrowNext.style.display='none';
-    borrowGuide.innerHTML='👏 아주 잘했어요! 이제 그림을 보고 '+a+' − '+b+'의 답을 골라 보세요.';
+    setGuide('👏 아주 잘했어요! 이제 그림을 보고 <b>'+a+' − '+b+'</b>의 답을 골라 보세요.');
     numericAnswers(ans,()=>{st.innerHTML='🎉 정답이에요!';setTimeout(()=>retry(borrowStage),1000)});
   }
 
   function finishDirect(){
     phase=3;
-    let remain=ones-b;
+    const remain=ones-b;
     borrowResult.innerHTML=
-      '<div class="resultTitle">10묶음을 풀 필요가 없었어요.</div>'+
+      '<div class="resultTitle">🎉 일의 자리에서 '+b+'개를 바로 뺐어요!</div>'+
       '<div class="finalDiagram">'+
-        '<div class="finalCol"><b>십의 자리</b><div class="tenRow">'+packs(tens)+'</div><div>'+tens+'묶음</div></div>'+
-        '<div class="finalCol"><b>일의 자리</b><div class="tenGrid">'+grid(remain)+'</div><div>'+remain+'개</div></div>'+
+        '<div class="finalCol"><b>십의 자리</b><div class="tenRow">'+packs(tens)+'</div><div>'+tens+'묶음</div></div>'+ 
+        '<div class="finalCol"><b>일의 자리</b><div class="tenGrid">'+grid(remain)+'</div><div>'+remain+'개</div></div>'+ 
       '</div>'+
-      '<div class="hiddenAnswerNote">일의 자리에서 바로 뺄 수 있으면 10묶음을 풀지 않아도 돼요. 그림을 보고 답을 골라 보세요.</div>';
+      '<div class="hiddenAnswerNote">일의 자리에서 바로 뺄 수 있으므로 10묶음을 풀지 않았어요. 그림을 보고 답을 골라 보세요.</div>';
     borrowNext.style.display='none';
-    borrowGuide.innerHTML='🎉 필요한 만큼 바로 뺐어요!';
+    setGuide('🎉 필요한 만큼 바로 뺐어요! 이제 그림을 보고 답을 골라 보세요.');
     numericAnswers(ans,()=>{st.innerHTML='🎉 정답이에요!';setTimeout(()=>retry(borrowStage),1000)});
   }
 
-  borrowNext.onclick=()=>{
-    if(!needBorrow) return;
+  function beginBorrow(){
+    phase=1;
+    borrowNext.style.display='none';
+    additionalNeeded=b-ones;
+    borrowResult.innerHTML=
+      '<div class="resultTitle">🔟 십의 자리의 10묶음 하나를 풀어요</div>'+
+      '<div class="hiddenAnswerNote">일의 자리의 '+ones+'개는 이미 뺐어요. '+b+'개를 빼려면 <b>'+additionalNeeded+'개</b>가 더 필요해요.</div>'+ 
+      '<div class="placeRow">'+
+        '<div class="placeBox"><b>옮길 10묶음</b><div id="borrowBundleDragBox" class="miniSource"></div></div>'+ 
+        '<div id="breakArea" class="placeBox" data-drop="yes"><div class="dropHint">⬇️ 여기에 🔟을 놓으면 10개의 🍎로 풀려요</div><div id="breakBundleBox" class="miniSource"></div></div>'+ 
+      '</div>';
 
-    if(phase===0){
-      phase=1;
+    const bundleBtn=document.createElement('button');
+    bundleBtn.className='bundleDrag'; bundleBtn.textContent='🔟';
+    borrowBundleDragBox.appendChild(bundleBtn);
+    setGuide('좋아요! 이제 십의 자리에서 <b>🔟 1묶음</b>을 가져와서 10개의 🍎로 풀어 봐요.');
+
+    makeDraggable(bundleBtn,target=>{
+      if(target.id!=='breakArea') return;
+      bundleBtn.remove();
+
+      // 10묶음 1개가 실제로 십의 자리에서 사라집니다.
+      const newTens=tens-1;
+      borrowTensInitial.innerHTML=packs(newTens);
+      borrowTensInitial.parentElement.querySelector('.smallNote').textContent=newTens+'개의 10묶음 = '+(newTens*10);
+
+      // 이미 뺀 ones개는 그대로 두고, 새로 생긴 10개만 드래그할 수 있게 합니다.
       borrowResult.innerHTML=
-        '<div class="resultTitle">10묶음 하나를 일의 자리로 가져와야 해요.</div>'+
-        '<div class="hiddenAnswerNote">일의 자리에는 '+ones+'개가 있지만 '+b+'개가 필요해요. 그래서 십의 자리의 🔟 1묶음을 풀어요.</div>'+
+        '<div class="resultTitle">🔟 1묶음을 풀었어요!</div>'+
+        '<div class="arrowBig">🔟 → 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎</div>'+ 
         '<div class="placeRow">'+
-          '<div id="borrowBundleSource" class="placeBox"><b>옮길 🔟 1묶음</b><div id="borrowBundleDragBox" class="miniSource"></div></div>'+ 
-          '<div id="breakArea" class="placeBox" data-drop="yes"><div class="dropHint">⬇️ 여기에 🔟을 놓으면 10개의 🍎로 풀려요</div><div id="breakBundleBox" class="miniSource"></div></div>'+ 
-        '</div>';
+          '<div class="placeBox"><b>십의 자리</b><div class="tenRow">'+packs(newTens)+'</div><div>'+newTens+'개의 10묶음</div></div>'+ 
+          '<div class="placeBox"><b>일의 자리</b><div class="tenGrid">'+grid(ones+10)+'</div><div>'+ones+' + 10 = '+(ones+10)+'개</div></div>'+ 
+        '</div>'+ 
+        '<div class="hiddenAnswerNote"><b>수의 모습이 바뀌었어요.</b> 십의 자리의 🔟은 1개 줄고, 일의 자리는 '+ones+'개에서 '+(ones+10)+'개가 되었어요.</div>';
 
-      // The draggable bundle starts OUTSIDE the drop target.
-      const bundleBtn=document.createElement('button');
-      bundleBtn.className='bundleDrag'; bundleBtn.textContent='🔟';
-      borrowBundleDragBox.appendChild(bundleBtn);
-      borrowNext.textContent='③ 🔟 묶음을 10개의 🍎로 풀기';
-      borrowNext.disabled=true;
+      // 새로 생긴 10개만 드래그 source로 사용합니다. 기존에 뺀 ones개는 taken 영역에 남아 있습니다.
+      borrowOneSrc.innerHTML=grid(10);
+      borrowOneNote.textContent='새로 생긴 10개 중 '+additionalNeeded+'개를 더 빼요';
+      phase=2;
+      updateTakenStatus();
+      setGuide('좋아요! 이제 새로 생긴 10개 중 <b>'+additionalNeeded+'개</b>를 뺀 곳으로 옮겨요.<br>이미 뺀 '+ones+'개와 합쳐서 '+b+'개가 되면 끝이에요.');
 
-      makeDraggable(bundleBtn,target=>{
-        if(target.id!=='breakArea' || broken) return;
-        broken=true;
-        bundleBtn.remove();
-
-        // Critical synchronization: the source ten-bundle disappears immediately.
-        const newTens=tens-1;
-        borrowTensInitial.innerHTML=packs(newTens);
-        borrowTensInitial.parentElement.querySelector('.smallNote').textContent=newTens+'개의 10묶음 = '+(newTens*10);
-
-        // The broken ten becomes 10 individual objects in the ones place.
-        const newOnes=ones+10;
-        borrowResult.innerHTML=
-          '<div class="resultTitle">🔟 1묶음을 풀었어요!</div>'+
-          '<div class="arrowBig">🔟 → 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎 🍎</div>'+ 
-          '<div class="placeRow">'+
-            '<div class="placeBox"><b>십의 자리</b><div class="tenRow">'+packs(newTens)+'</div><div>'+newTens+'개의 10묶음</div></div>'+ 
-            '<div class="placeBox"><b>일의 자리</b><div class="tenGrid">'+grid(newOnes)+'</div><div>'+newOnes+'개</div></div>'+ 
-          '</div>'+ 
-          '<div class="hiddenAnswerNote"><b>중요해요!</b> 십의 자리의 10묶음은 1개 줄고, 일의 자리의 사물은 10개 늘었어요. 값은 그대로예요.</div>';
-
-        breakArea.classList.add('completedDrop');
-        breakArea.querySelector('.dropHint').textContent='✅ 🔟 1묶음을 풀었어요! 십의 자리에서 1묶음이 줄었어요.';
-        borrowGuide.innerHTML='좋아요! 십의 자리의 🔟이 <b>1개 줄고</b>, 그 대신 일의 자리에 🍎 <b>10개가 생겼어요.</b><br>이제 '+newOnes+'개 중에서 '+b+'개를 빼 볼까요?';
-        borrowNext.textContent='④ 일의 자리에서 '+b+'개를 뺀 곳으로 옮겨요';
-        borrowNext.disabled=true;
-        phase=2;
-
-        // Now the child sees and moves the actual expanded ones-place objects.
-        borrowTakenItems.innerHTML='';
-        moved=0;
-        renderOneSource(newOnes);
+      borrowOneSrc.querySelectorAll('.cell').forEach(x=>{
+        x.classList.add('moveObj');
+        makeDraggable(x,target2=>{
+          if(target2.id!=='borrowTaken' || phase!==2) return;
+          if(alreadyTaken>=b) return;
+          borrowTakenItems.appendChild(x);
+          alreadyTaken++;
+          updateTakenStatus();
+          if(alreadyTaken===b){ finishBorrow(); }
+          else if(alreadyTaken===ones){
+            setGuide('좋아요! '+ones+'개를 먼저 뺐어요. 이제 '+additionalNeeded+'개를 더 옮겨요.');
+          }
+        });
       });
+    });
+  }
+
+  // 처음에는 실제 일의 자리 물건을 옮깁니다.
+  attachDrags(ones,()=>{
+    if(phase!==0) return;
+    alreadyTaken++;
+    updateTakenStatus();
+    if(alreadyTaken===b){ finishDirect(); return; }
+    if(needBorrow && alreadyTaken===ones){
+      borrowNext.style.display='block';
+      borrowNext.textContent='② 🔟 10묶음 하나 가져오기';
+      setGuide('👏 일의 자리의 '+ones+'개를 모두 뺐어요.<br><b>'+b+'개를 모두 빼려면 🔟 10묶음 하나를 풀어야 해요.</b>');
+      st.innerHTML='일의 자리의 '+ones+'개를 모두 뺐어요. 이제 10묶음을 풀어 봐요.';
     }
+  });
+
+  borrowNext.onclick=()=>{
+    if(needBorrow && phase===0 && alreadyTaken===ones) beginBorrow();
   };
 
   if(needBorrow){
-    borrowGuide.innerHTML='일의 자리에는 '+ones+'개, 빼야 할 수는 '+b+'개예요.<br><b>먼저 일의 자리에서 있는 만큼 빼 봐요.</b>';
-    borrowNext.textContent='① 일의 자리에서 먼저 빼 보기';
+    setGuide('일의 자리에는 '+ones+'개, 빼야 할 수는 '+b+'개예요.<br><b>먼저 일의 자리의 '+ones+'개를 모두 옮겨 봐요.</b>');
   }else{
-    borrowGuide.innerHTML='일의 자리에는 '+ones+'개가 있고 '+b+'개를 빼야 해요.<br><b>10묶음을 풀지 않고도 뺄 수 있어요!</b>';
+    setGuide('일의 자리에는 '+ones+'개가 있고 '+b+'개를 빼야 해요.<br><b>10묶음을 풀지 않고도 뺄 수 있어요!</b>');
   }
-
-  renderOneSource(ones);
 }
 
 function numericAnswers(correct,done){let ar=[correct];while(ar.length<4){let x=Math.max(0,correct+Math.floor(Math.random()*7)-3);if(!ar.includes(x))ar.push(x)}ar.sort(()=>Math.random()-.5);ar.forEach(x=>{let q=document.createElement('button');q.className='ans';q.textContent=x;q.onclick=()=>{if(x===correct){q.classList.add('right');q.disabled=true;done()}else{q.classList.add('wrong');q.disabled=true;st.innerHTML='🌱 틀렸어요. 빨간 답은 다시 고르지 않아도 돼요.'}};answers.appendChild(q)})}
