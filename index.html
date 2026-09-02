@@ -40,7 +40,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px
 .hiddenAnswerNote{font-size:17px;font-weight:900;text-align:center;margin-top:9px;background:#fff8df;padding:10px;border-radius:14px}
 
 @media(max-width:520px){.top h1{font-size:25px}.cell{height:43px}.object{width:52px;height:52px;font-size:28px}.columns{grid-template-columns:1fr}.ans{min-width:55px}}
-</style>
+.tenGrid{display:grid;grid-template-columns:repeat(5,minmax(42px,1fr));gap:5px;max-width:320px;margin:7px auto}.previewGrid{max-width:360px}.moveObj{touch-action:none;user-select:none}.bundleDrag{touch-action:none;user-select:none}.carryInteract,.borrowInteract{margin-top:12px}.placeBox{padding:10px}.finalDiagram{display:flex;justify-content:center;align-items:flex-end;gap:12px;flex-wrap:wrap}.finalCol{min-width:125px;text-align:center;padding:8px;border:2px solid #e2e6ec;border-radius:15px;background:#fff}.hiddenAnswerNote{font-size:17px;font-weight:900;text-align:center;margin-top:8px;background:#fff8df;padding:9px;border-radius:12px}.transformBox{margin-top:10px;padding:10px;border-radius:14px;background:#fafbfc;border:2px solid #e2e6ec;text-align:center}.resultTitle{font-weight:900;margin-bottom:7px}.previewGrid .cell{height:45px;font-size:25px}.tenGrid .cell{height:45px;font-size:25px}</style>
 </head>
 <body><div id="app"></div>
 <script>
@@ -271,123 +271,28 @@ function subStage(){
 function carryStage(){
   let a=15+Math.floor(Math.random()*5), b=5+Math.floor(Math.random()*5), ans=a+b;
   let tensA=Math.floor(a/10), onesA=a%10, onesB=b;
-  let movedA=0,movedB=0,phase=0,packed=false,raised=false;
-
+  let movedA=0,movedB=0,phase=0,raised=false;
   app.innerHTML=`<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">
-    <h2 style="text-align:center">⑤ 받아올림</h2>
-    <div class="msg">🍎 ${a} + 🍐 ${b}<br><b>먼저 사과와 배를 일의 자리로 직접 옮겨 보세요.</b></div>
-    <div class="carryEquation">${a} + ${b} = ?</div>
-
-    <div class="diagram">
-      <div class="diagramCol"><h3>🍎 ${a}</h3>
-        <div class="tenRow">${Array.from({length:tensA},()=>'<span class="tenPack">🔟</span>').join('')}</div>
-        <div id="carryAppleSrc" class="miniSource"></div>
-      </div>
-      <div class="plus">+</div>
-      <div class="diagramCol"><h3>🍐 ${b}</h3>
-        <div class="tenRow"></div>
-        <div id="carryPearSrc" class="miniSource"></div>
-      </div>
-    </div>
-
-    <div class="carryInteract">
-      <div class="placeRow">
-        <div id="onesDrop" class="placeBox" data-drop="yes">
-          <div class="dropHint">일의 자리 · 여기에 모아요</div>
-          <div id="onesPool" class="miniSource"></div>
-        </div>
-      </div>
-      <div id="carryGuide" class="msg">🍎 사과를 모두 옮긴 뒤 🍐 배를 옮겨요.</div>
-      <button id="carryNext" class="stepBtn" disabled>① 사과를 모두 옮겨요</button>
-    </div>
-
-    <div id="carryTransform" class="transformBox">
-      <div class="resultTitle">일의 자리</div>
-      <div id="carryCount">아직 옮기지 않았어요.</div>
-    </div>
-
-    <div id="carryTenDrop" class="placeBox" data-drop="yes" style="display:none;margin-top:10px">
-      <div class="dropHint">십의 자리 · 🔟 묶음을 여기로 옮겨요</div>
-      <div id="raisedTens" class="miniSource"></div>
-    </div>
-
-    <div id="carryResult" class="resultDiagram"></div>
-    <div id="answers" class="answerGrid"></div>
-    <div id="st" class="status">도식을 보면서 손으로 옮겨 봅시다.</div>
+  <h2 style="text-align:center">⑤ 받아올림</h2>
+  <div class="msg">🍎 ${a} + 🍐 ${b}<br><b>사과와 배를 일의 자리로 옮기면서 10의 의미를 알아봐요.</b></div>
+  <div class="carryEquation">${a} + ${b} = ?</div>
+  <div class="diagram"><div class="diagramCol"><h3>🍎 ${a}</h3><div class="tenRow">${Array.from({length:tensA},()=>'<span class="tenPack">🔟</span>').join('')}</div><div id="carryAppleSrc" class="miniSource"></div></div><div class="plus">+</div><div class="diagramCol"><h3>🍐 ${b}</h3><div id="carryPearSrc" class="miniSource"></div></div></div>
+  <div class="carryInteract"><div id="onesDrop" class="placeBox" data-drop="yes"><div class="dropHint">일의 자리 · 10칸 배열판</div><div id="onesBoard" class="tenGrid"></div><div id="onesCount" class="hiddenAnswerNote">일의 자리: 0개</div></div><div id="carryGuide" class="msg">🍎 사과를 모두 옮긴 뒤 🍐 배를 옮겨요.</div><button id="carryNext" class="stepBtn" disabled>① 사과를 모두 옮겨요</button></div>
+  <div id="carryTransform" class="transformBox"></div>
+  <div id="carryTenDrop" class="placeBox" data-drop="yes" style="display:none;margin-top:10px"><div class="dropHint">십의 자리 · 새 🔟 묶음을 옮겨요</div><div id="raisedTens" class="miniSource"></div></div>
+  <div id="bundleAdd" class="transformBox" style="display:none"></div><div id="carryResult" class="resultDiagram"></div><div id="answers" class="answerGrid"></div><div id="st" class="status">사물을 먼저 옮겨 봅시다.</div>
   </div></div>`;
-
   back.onclick=menu;
-
-  function makeCarryObj(parent,emoji,type){
-    let x=document.createElement('button');
-    x.className='moveObj'; x.textContent=emoji;
-    makeDraggable(x,target=>{
-      if(target.id!=='onesDrop') return;
-      if(type==='apple' && movedA>=onesA) return;
-      if(type==='pear' && movedA<onesA) return;
-      if(type==='apple') movedA++; else movedB++;
-      document.getElementById('onesPool').appendChild(x);
-      carryCount.innerHTML='일의 자리로 모은 수: <b>'+ (movedA+movedB) +'개</b> / '+(onesA+onesB);
-      if(movedA===onesA && movedB===onesB){
-        carryGuide.innerHTML='👏 모두 모였어요! 10개를 찾아 🔟 1묶음으로 만들어 봐요.';
-        carryNext.disabled=false;
-        carryNext.textContent='② 10개를 🔟 1묶음으로 묶기';
-      }else if(movedA===onesA){
-        carryGuide.innerHTML='👏 사과를 모두 옮겼어요! 이제 🍐 배를 옮겨요.';
-        carryNext.disabled=true;
-      }else{
-        carryGuide.innerHTML='🍎 사과를 하나씩 옮겨요.';
-      }
-    });
-    parent.appendChild(x);
-  }
-
-  for(let i=0;i<onesA;i++) makeCarryObj(carryAppleSrc,'🍎','apple');
-  for(let i=0;i<onesB;i++) makeCarryObj(carryPearSrc,'🍐','pear');
-
+  const board=document.getElementById('onesBoard');
+  function drawBoard(total){ board.innerHTML=''; for(let i=0;i<Math.max(10,total);i++){let c=document.createElement('div');c.className='cell';if(i<total){c.classList.add('filled');c.textContent=i<movedA?'🍎':'🍐'} board.appendChild(c)} onesCount.innerHTML='일의 자리: <b>'+total+'개</b>'+(total>=10?' · 10개를 한 묶음으로 만들 수 있어요!':''); }
+  function addObj(parent,emoji,type){let x=document.createElement('button');x.className='moveObj';x.textContent=emoji;makeDraggable(x,target=>{if(target.id!=='onesDrop')return;if(type==='pear'&&movedA<onesA)return;if(type==='apple'&&movedA>=onesA)return;if(type==='apple')movedA++;else movedB++;x.remove();drawBoard(movedA+movedB);if(movedA===onesA&&movedB===onesB){carryGuide.innerHTML='👏 모두 모았어요! 배열판에서 10개를 확인해 봐요.';carryNext.disabled=false;carryNext.textContent='② 10개를 🔟 1묶음으로 만들기';st.innerHTML='일의 자리에 '+(onesA+onesB)+'개가 모였어요.'}else if(movedA===onesA)carryGuide.innerHTML='👏 사과를 모두 옮겼어요! 이제 🍐 배를 옮겨요.'});parent.appendChild(x)}
+  drawBoard(0);for(let i=0;i<onesA;i++)addObj(carryAppleSrc,'🍎','apple');for(let i=0;i<onesB;i++)addObj(carryPearSrc,'🍐','pear');
   carryNext.onclick=()=>{
-    if(phase===0 && movedA===onesA && movedB===onesB){
-      phase=1;
-      carryNext.textContent='② 10개를 🔟 1묶음으로 묶기';
-      st.innerHTML='일의 자리에 '+(onesA+onesB)+'개가 모였어요. 10개를 하나로 묶어요.';
-      document.getElementById('carryTransform').innerHTML=
-        '<div class="resultTitle">10개를 한눈에 세어 봐요</div>'+
-        '<div class="onesPool">'+Array.from({length:10},(_,i)=>'<span class="one">'+(i<onesA?'🍎':'🍐')+'</span>').join('')+'</div>'+
-        '<div class="hiddenAnswerNote">10개가 모이면 🔟 1묶음이 될 수 있어요.</div>';
-    }else if(phase===1){
-      phase=2; packed=true;
-      document.getElementById('carryTransform').innerHTML=
-        '<div class="resultTitle">10개가 🔟 1묶음으로 바뀌었어요!</div>'+
-        '<div class="arrowBig">⬇️</div>'+
-        '<div class="placeRow"><button id="newBundle" class="bundleDrag">🔟</button>'+
-        '<div style="font-weight:900">+ 일의 자리에 남은 '+(onesA+onesB-10)+'개</div></div>';
-      document.getElementById('carryTenDrop').style.display='block';
-      carryNext.style.display='none';
-
-      const bundleEl=document.getElementById('newBundle');
-      makeDraggable(bundleEl,target=>{
-        if(target.id!=='carryTenDrop' || raised) return;
-        raised=true;
-        bundleEl.remove();
-        raisedTens.appendChild(bundleEl);
-        let remain=onesA+onesB-10, newTens=tensA+1;
-        carryResult.innerHTML=
-          '<div class="resultTitle">완성된 수의 모양</div>'+
-          '<div class="finalDiagram">'+
-            '<div class="finalCol"><b>십의 자리</b><div class="tenRow">'+Array.from({length:newTens},()=>'<span class="tenPack">🔟</span>').join('')+'</div></div>'+
-            '<div class="finalCol"><b>일의 자리</b><div class="onesRow">'+Array.from({length:remain},()=>'<span class="one">🍎</span>').join('')+'</div></div>'+
-          '</div>'+
-          '<div class="hiddenAnswerNote">완성했어요! 이제 그림을 보고 아래에서 답을 골라 보세요.</div>';
-        st.innerHTML='🎉 🔟 1묶음을 십의 자리로 올렸어요! 완성된 그림을 보고 답을 생각해 보세요.';
-        numericAnswers(ans,()=>{
-          st.innerHTML='🎉 정답이에요!';
-          setTimeout(()=>retry(carryStage),1000);
-        });
-      });
+    if(phase===0){phase=1;const total=onesA+onesB,remain=total-10;carryTransform.innerHTML='<div class="resultTitle">10개를 한눈에 확인해요</div><div class="tenGrid previewGrid">'+Array.from({length:10},(_,i)=>'<div class="cell filled">'+(i<onesA?'🍎':'🍐')+'</div>').join('')+'</div><div class="hiddenAnswerNote">10개를 🔟 1묶음으로 만들고, '+remain+'개가 남아요.</div>';carryNext.textContent='③ 만든 🔟을 십의 자리로 옮기기';
+      let bundle=document.createElement('button');bundle.id='newBundle';bundle.className='bundleDrag';bundle.textContent='🔟';raisedTens.appendChild(bundle);carryTenDrop.style.display='block';makeDraggable(bundle,target=>{if(target.id!=='carryTenDrop'||raised)return;raised=true;bundle.remove();raisedTens.appendChild(bundle);carryNext.style.display='none';bundleAdd.style.display='block';bundleAdd.innerHTML='<div class="resultTitle">십의 자리의 묶음을 더해요</div><div class="finalDiagram"><div class="finalCol"><b>원래 십의 자리</b><div class="tenRow">'+Array.from({length:tensA},()=>'<span class="tenPack">🔟</span>').join('')+'</div></div><div class="plus">+</div><div class="finalCol"><b>새로 올라온 묶음</b><div class="tenRow"><span class="tenPack">🔟</span></div></div></div><button id="mergeTens" class="stepBtn">④ 🔟 묶음끼리 더하기</button>';st.innerHTML='좋아요! 이제 원래 있던 10묶음과 새 10묶음을 더해 봐요.';mergeTens.onclick=()=>{let nt=tensA+1;bundleAdd.innerHTML='<div class="resultTitle">십의 자리</div><div class="tenRow">'+Array.from({length:nt},()=>'<span class="tenPack">🔟</span>').join('')+'</div><div class="hiddenAnswerNote">10묶음 '+tensA+'개 + 10묶음 1개 = 10묶음 '+nt+'개</div><button id="showFinal" class="stepBtn">⑤ 일의 자리와 합쳐서 완성하기</button>';showFinal.onclick=()=>{carryResult.innerHTML='<div class="resultTitle">완성된 수의 모양</div><div class="finalDiagram"><div class="finalCol"><b>십의 자리</b><div class="tenRow">'+Array.from({length:nt},()=>'<span class="tenPack">🔟</span>').join('')+'</div></div><div class="finalCol"><b>일의 자리</b><div class="onesRow">'+Array.from({length:remain},()=>'<span class="one">'+(remain?'🍎':'')+'</span>').join('')+'</div></div></div><div class="hiddenAnswerNote">그림을 보고 전체가 몇 개인지 생각해 보세요. 정답 숫자는 미리 보여주지 않아요.</div>';bundleAdd.style.display='none';numericAnswers(ans,()=>{st.innerHTML='🎉 정답이에요!';setTimeout(()=>retry(carryStage),1000)})}}})
     }
   };
 }
-
 function borrowStage(){
   let a=21+Math.floor(Math.random()*8), b=1+Math.floor(Math.random()*9);
   if(a%10===0) a+=1;
