@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>수학놀이터 V15</title>
+<title>수학놀이터 V16</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;padding:0;overscroll-behavior:none}body{background:#f6f8fb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}
 button{font:inherit;-webkit-tap-highlight-color:transparent}.app{max-width:850px;margin:auto;padding:14px 12px 45px}.top{background:#ffe56b;border-radius:24px;padding:16px;text-align:center}.top h1{margin:0;font-size:29px}.sub{font-weight:700;margin-top:5px}.card{background:#fff;border-radius:24px;padding:16px;margin-top:12px;box-shadow:0 3px 14px #0001}
@@ -37,7 +37,7 @@ function bundle(e='🍎'){return '<div class="note" style="font-size:25px">🔟 
 function bundles(n,e='🍎'){let s='<div class="columns">';for(let i=0;i<n;i++)s+='<div class="col">'+bundle(e)+'</div>';return s+'</div>'}
 
 function menu(){
-app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터 V15</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
+app.innerHTML='<div class="app"><div class="top"><h1>🍎 수학놀이터 V16</h1><div class="sub">그림으로 생각하고 손으로 움직여요</div></div><div class="card"><div class="menu">'+
 '<button id="m1">① 수 세기</button><button id="m2">② 🔟 10의 개념</button><button id="m3">③ 덧셈</button><button id="m4">④ 뺄셈</button><button id="m5">⑤ 받아올림</button><button id="m6">⑥ 받아내림</button></div></div></div>';
 m1.onclick=countStage;m2.onclick=tenStage;m3.onclick=addStage;m4.onclick=subStage;m5.onclick=carryStage;m6.onclick=borrowStage;
 }
@@ -84,7 +84,7 @@ function renderTen(){
       <div class="sub">10개 묶음으로 ${G.target}을 만들어 보세요</div>
     </div>
     <div class="card">
-      <button class="back" onclick="home()">← 메뉴</button>
+      <button class="back" onclick="menu()">← 메뉴</button>
       <div class="question">🎯 목표: <b>${G.target}</b></div>
 
       <div class="hint">
@@ -138,10 +138,84 @@ function renderTen(){
     };
   }
 }
-function addStage(){let a=1+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*7);let total=a+b;app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">③ 덧셈</h2><div class="columns"><div class="col"><h3>🍎 '+a+'개</h3><div id="sa" class="source"></div></div><div class="col"><h3>🍐 '+b+'개</h3><div id="sb" class="source"></div></div></div><div class="msg">🍎과 🍐를 <b>하나씩 끌어서</b> 가운데 수판에 모아 보세요.</div><div id="addDest" class="board" data-drop="yes" style="min-height:160px">'+Array.from({length:4},()=>'<div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div>').join('')+'</div><div id="st" class="status">옮긴 수: <b>0</b>개 / 목표 '+total+'개</div><div class="actions">'+B('doneAdd','다 옮겼어요!','primary')+'</div></div></div>';back.onclick=menu;
-function fill(id,n,e){for(let i=0;i<n;i++){let x=document.createElement('button');x.className='object';x.textContent=e;makeDraggable(x,target=>{if(target.id==='addDest'){let cell=target.querySelector('.cell:not(.filled)');if(cell){cell.textContent=e;cell.classList.add('filled');x.remove();let k=target.querySelectorAll('.filled').length;st.innerHTML='옮긴 수: <b>'+k+'</b>개 / 목표 '+total+'개'}}});document.getElementById(id).appendChild(x)}}
-fill('sa',a,'🍎');fill('sb',b,'🍐');
-doneAdd.onclick=()=>{let n=addDest.querySelectorAll('.filled').length;if(n===total){st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>합하니까 '+total+'개가 되었네요!';setTimeout(()=>retry(addStage),1000)}else st.innerHTML='🌱 아직 '+(total-n)+'개를 더 옮겨 주세요.'}}
+function addStage(){
+  let a=1+Math.floor(Math.random()*7), b=1+Math.floor(Math.random()*7);
+  let total=a+b;
+  let movedA=0, movedB=0;
+
+  app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">'+
+    '<h2 style="text-align:center">③ 덧셈</h2>'+
+    '<div class="columns">'+
+      '<div class="col"><h3>🍎 '+a+'개</h3><div id="sa" class="source"></div></div>'+
+      '<div class="col"><h3>🍐 '+b+'개</h3><div id="sb" class="source" style="opacity:.38;pointer-events:none"></div></div>'+
+    '</div>'+
+    '<div id="addGuide" class="msg">먼저 🍎 사과를 모두 옮겨 보세요.<br>사과를 다 옮기면 🍐 배를 옮길 수 있어요.</div>'+
+    '<div id="addDest" class="board" data-drop="yes" style="min-height:160px">'+
+      Array.from({length:4},()=>'<div class="row">'+Array.from({length:5},()=>'<div class="cell"></div>').join('')+'</div>').join('')+
+    '</div>'+
+    '<div id="st" class="status">🍎 옮긴 수: <b>0</b> / '+a+'</div>'+
+    '<div class="actions">'+B('doneAdd','다 옮겼어요!','primary')+'</div>'+
+  '</div></div>';
+
+  back.onclick=menu;
+
+  function enablePears(){
+    const pearBox=document.getElementById('sb');
+    pearBox.style.opacity='1';
+    pearBox.style.pointerEvents='auto';
+    document.getElementById('addGuide').innerHTML='👏 사과를 모두 옮겼어요!<br>이제 🍐 배를 모두 옮겨 보세요.';
+    st.innerHTML='🍐 옮긴 수: <b>0</b> / '+b;
+  }
+
+  function addObject(id,n,e,type){
+    for(let i=0;i<n;i++){
+      let x=document.createElement('button');
+      x.className='object';
+      x.textContent=e;
+      makeDraggable(x,target=>{
+        if(target.id!=='addDest') return;
+
+        let cell=target.querySelector('.cell:not(.filled)');
+        if(!cell) return;
+
+        // Strict sequence: pears cannot move until every apple is moved.
+        if(type==='pear' && movedA<a) return;
+
+        cell.textContent=e;
+        cell.classList.add('filled');
+        x.remove();
+
+        if(type==='apple'){
+          movedA++;
+          st.innerHTML='🍎 옮긴 수: <b>'+movedA+'</b> / '+a;
+          if(movedA===a) enablePears();
+        }else{
+          movedB++;
+          st.innerHTML='🍐 옮긴 수: <b>'+movedB+'</b> / '+b;
+          if(movedB===b){
+            document.getElementById('addGuide').innerHTML='🎉 사과와 배를 모두 옮겼어요!<br>이제 「다 옮겼어요!」를 눌러 보세요.';
+          }
+        }
+      });
+      document.getElementById(id).appendChild(x);
+    }
+  }
+
+  addObject('sa',a,'🍎','apple');
+  addObject('sb',b,'🍐','pear');
+
+  doneAdd.onclick=()=>{
+    let n=addDest.querySelectorAll('.filled').length;
+    if(movedA===a && movedB===b && n===total){
+      st.innerHTML='🎉 '+a+' + '+b+' = <b>'+total+'</b><br>합하니까 '+total+'개가 되었네요!';
+      setTimeout(()=>retry(addStage),1000);
+    }else if(movedA<a){
+      st.innerHTML='🌱 먼저 🍎 사과를 모두 옮겨 주세요.';
+    }else{
+      st.innerHTML='🌱 이제 🍐 배를 모두 옮겨 주세요.';
+    }
+  };
+}
 
 /* ④ subtraction */
 function subStage(){let a=3+Math.floor(Math.random()*7),b=1+Math.floor(Math.random()*a),ans=a-b;app.innerHTML='<div class="app"><button id="back" class="back">← 메뉴</button><div class="card"><h2 style="text-align:center">④ 뺄셈</h2><div class="msg">🍎 '+a+'개가 있어요. '+b+'개를 <b>하나씩 끌어서</b> 아래로 빼 보세요.</div><div id="subSrc" class="source" data-drop="yes"></div><div class="eq">'+a+' − '+b+' = ?</div><div id="answers" class="answerGrid"></div><div id="st" class="status">뺀 수: 0개</div></div></div>';back.onclick=menu;
