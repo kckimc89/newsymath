@@ -335,9 +335,9 @@ function carryStage(){
           '<div class="bundleTenVisual">'+Array.from({length:10},(_,i)=>'<span class="one">'+(i<onesA?'🍎':'🍐')+'</span>').join('')+'</div>'+
           '<div class="bundleArrow">→</div>'+
           '<div class="tenPackBig">🔟</div>'+
-          '<div class="remainVisual">'+Array.from({length:Math.max(0,onesB-1)},()=>'<span class="one">🍐</span>').join('')+'</div>'+
+          '<div class="remainVisual">'+Array.from({length:Math.max(0,remain)},()=>'<span class="one">🍐</span>').join('')+'</div>'+
         '</div>'+
-        '<div class="hiddenAnswerNote"><b>10개</b>를 🔟 1묶음으로 만들고, 일의 자리에는 <b>'+remain+'개</b>가 남아요.</div>';
+        '<div class="hiddenAnswerNote"><b>10개</b>를 🔟 1묶음으로 만들고, 일의 자리에는 <b>🍐 배 '+remain+'개</b>가 남아요.</div>';
       carryNext.textContent='③ 만든 🔟을 십의 자리로 옮기기';
       carryNext.disabled=false;
       carryNext.classList.add('readyStep');
@@ -378,7 +378,7 @@ function carryStage(){
             carryResult.innerHTML=
               '<div class="resultTitle">완성된 수의 모양</div>'+
               '<div class="finalDiagram"><div class="finalCol"><b>십의 자리</b><div class="tenRow">'+Array.from({length:newTens},()=>'<span class="tenPack">🔟</span>').join('')+'</div><div>'+newTens+'묶음</div></div>'+
-              '<div class="finalCol"><b>일의 자리</b><div class="onesRow">'+Array.from({length:remain},()=>'<span class="one">🍎</span>').join('')+'</div><div>'+remain+'개</div></div></div>'+
+              '<div class="finalCol"><b>일의 자리</b><div class="onesRow">'+Array.from({length:remain},()=>'<span class="one">🍐</span>').join('')+'</div><div>'+remain+'개</div></div></div>'+
               '<div class="hiddenAnswerNote">완성된 그림을 보고 전체가 몇 개인지 생각해 보세요. <b>정답 숫자는 미리 보여주지 않아요.</b></div>';
             bundleAdd.style.display='none';
             numericAnswers(ans,()=>{st.innerHTML='🎉 정답이에요!';retry(carryStage)});
