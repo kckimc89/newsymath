@@ -395,20 +395,30 @@ function borrowStage(){
   if(a%10===0)a++;
   const tens=Math.floor(a/10), ones=a%10;
   const b=ones+1+Math.floor(Math.random()*(9-ones));
-  const ans=a-b, additional=b-ones;
-  let broken=false;
+  const ans=a-b;
 
   const pack=n=>Array.from({length:n},()=>'<span class="tenPack">🔟</span>').join('');
-  const itemGrid=(n,cls='')=>{
+  const boardCells=(n,emoji='🍎',cls='')=>{
     const rows=Math.ceil(n/5);
     let html='<div class="borrowAvailable">';
     for(let r=0;r<rows;r++){
       html+='<div class="row">';
       for(let c=0;c<5;c++){
         const i=r*5+c;
-        html+='<div class="cell '+(i<n?'filled '+cls:'')+'">'+(i<n?'🍎':'')+'</div>';
+        html+='<div class="cell '+(i<n?'filled '+cls:'')+'">'+(i<n?emoji:'')+'</div>';
       }
       html+='</div>';
+    }
+    return html+'</div>';
+  };
+  const staticGrid=(n,emoji='🍎',cls='')=>{
+    const rows=Math.ceil(n/5);
+    let html='<div class="tenGrid">';
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<5;c++){
+        const i=r*5+c;
+        html+='<div class="cell '+(i<n?'filled '+cls:'')+'">'+(i<n?emoji:'')+'</div>';
+      }
     }
     return html+'</div>';
   };
@@ -416,14 +426,14 @@ function borrowStage(){
   app.innerHTML=`<div class="app"><button id="back" class="back">← 메뉴</button><div class="card">
     <h2 style="text-align:center">⑥ 받아내림</h2>
     <div class="carryEquation">${a} − ${b} = ?</div>
-    <div id="borrowGuide" class="msg">일의 자리에는 <b>${ones}개</b>밖에 없어요. 그런데 <b>${b}개</b>를 빼야 해요.<br>먼저 일의 자리의 ${ones}개를 뺀 곳으로 옮겨 보세요.</div>
+    <div id="borrowGuide" class="msg">일의 자리에는 <b>${ones}개</b>밖에 없는데 <b>${b}개</b>를 빼야 해요.<br><b>${b}개를 빼려면 먼저 일의 자리에서 뺄 수 있는 ${ones}개를 모두 옮겨 보세요.</b></div>
 
     <div class="placeRow">
       <div class="placeBox"><b>십의 자리</b><div id="tensBox" class="tenRow">${pack(tens)}</div><div>${tens}개의 10묶음</div></div>
       <div class="placeBox"><b>일의 자리</b><div id="firstAvailable" class="borrowAvailable"></div><div>${ones}개</div></div>
     </div>
 
-    <div class="borrowPhaseTitle">① 먼저 일의 자리에서 뺄 수 있는 만큼 빼요</div>
+    <div class="borrowPhaseTitle">① ${b}개를 빼야 하지만, 먼저 일의 자리 ${ones}개만 모두 빼요</div>
     <div id="firstTake" class="placeBox takeBox" data-drop="yes"><div class="dropHint">뺀 곳 · ${ones}개</div><div id="firstTakenItems" class="tenGrid"></div></div>
     <div id="st" class="status">뺀 수: <b>0</b> / ${ones}</div>
 
@@ -436,7 +446,10 @@ function borrowStage(){
   const firstSource=document.getElementById('firstAvailable');
   const firstTaken=document.getElementById('firstTakenItems');
 
-  function updateFirst(){st.innerHTML='뺀 수: <b>'+firstTaken.children.length+'</b> / '+ones;}
+  function updateFirst(){
+    const n=firstTaken.children.length;
+    st.innerHTML='일의 자리에서 뺀 수: <b>'+n+'개</b> / '+ones+'개';
+  }
 
   for(let i=0;i<ones;i++){
     const x=document.createElement('button');
@@ -449,44 +462,60 @@ function borrowStage(){
   }
 
   function showBreakStep(){
-    borrowGuide.innerHTML='👏 일의 자리의 '+ones+'개를 모두 뺐어요.<br>그런데 아직 <b>'+additional+'개</b>가 더 필요해요.';
-    borrowStep.innerHTML='<div class="transformClean"><div class="resultTitle">더 뺄 수가 없으니 🔟 10묶음 하나를 풀어볼까요?</div><button id="breakBtn" class="stepBtn">🔟 10묶음 하나 풀기</button></div>';
+    const missing=b-ones;
+    borrowGuide.innerHTML='👏 일의 자리의 <b>'+ones+'개</b>를 모두 옮겼어요.<br>그런데 문제에서는 <b>'+b+'개</b>를 빼야 해요. <b>'+missing+'개가 부족해요!</b><br>그래서 🔟 10묶음 하나를 풀어야 해요.';
+    st.innerHTML='⚠️ '+b+'개를 빼야 하는데 '+ones+'개밖에 없어요. <b>'+missing+'개가 부족해요.</b>';
+    borrowStep.innerHTML='<div class="transformClean"><div class="resultTitle">'+b+'개를 빼야 하는데 '+ones+'개만 뺐어요</div><div class="hiddenAnswerNote">'+ones+'개를 모두 옮겨도 <b>'+missing+'개가 더 필요해요.</b></div><button id="breakBtn" class="stepBtn">🔟 10묶음 하나 풀어서 '+missing+'개를 더 만들기</button></div>';
     breakBtn.onclick=breakBundle;
   }
 
   function breakBundle(){
-    broken=true;
+    const missing=b-ones;
     document.getElementById('tensBox').innerHTML=pack(tens-1);
 
-    // 10묶음을 푼 직후, 아래에 새 5칸 배열판을 만들어 다시 빼기
     borrowStep.innerHTML=`<div class="transformClean">
-      <div class="resultTitle">🔟 1묶음을 풀었어요!</div>
+      <div class="resultTitle">🔟 10묶음 하나를 풀었어요!</div>
       <div class="borrowChangedDiagram">
         <div class="placeBox"><b>십의 자리</b><div class="tenRow">${pack(tens-1)}</div><div>10묶음이 1개 줄었어요</div></div>
-        <div class="placeBox"><b>일의 자리</b>${itemGrid(ones)}<div class="borrowAvailable">${itemGrid(10,'borrowBlue').replace('borrowAvailable','borrowAvailable')}</div><div><b>${ones} + 10 = ${ones+10}개</b></div></div>
+        <div class="placeBox"><b>일의 자리</b>${staticGrid(ones,'🍎')}${staticGrid(10,'🍎','borrowBlue')}<div><b>${ones} + 10 = ${ones+10}개</b></div></div>
       </div>
-      <div class="borrowExplain">파란색 사물 10개는 🔟 묶음에서 풀려 나온 10개예요.</div>
+      <div class="borrowExplain">🔟 1묶음을 풀어서 <b>10개의 사과</b>가 생겼어요. 5개씩 줄을 맞춰 한눈에 볼 수 있어요.</div>
     </div>
-    <div class="msg"><b>이제 아래의 새 배열판에서 ${b}개를 모두 뺄 곳으로 옮겨 보세요.</b><br>원래 빼려고 했던 수 <b>${b}개</b>를 그대로 빼면 돼요.</div>
-    <div class="borrowPhaseTitle">② 10묶음을 푼 뒤 · ${b}개를 다시 빼요</div>
+    <div class="msg"><b>이제부터는 실제로 ${b}개를 빼요.</b><br>먼저 원래 있던 🍎 <b>${ones}개</b>를 모두 옮기고, 그 다음 🔵 새로 생긴 10개를 이어서 옮겨 보세요.</div>
+    <div class="borrowPhaseTitle">② 원래 있던 ${ones}개를 먼저 옮겨요 → 모두 옮기면 새로 생긴 10개가 열려요</div>
     <div id="secondAvailable" class="borrowAvailable"></div>
-    <div id="secondTake" class="placeBox takeBox borrowTakeNew" data-drop="yes"><div class="dropHint">뺀 곳 · ${b}개를 모두 옮겨요</div><div id="secondTakenItems" class="tenGrid"></div></div>
-    <div id="secondStatus" class="status">뺀 수: <b>0</b> / ${b}</div>`;
+    <div id="secondTake" class="placeBox takeBox borrowTakeNew" data-drop="yes"><div class="dropHint">뺀 곳 · ${b}개</div><div id="secondTakenItems" class="tenGrid"></div></div>
+    <div id="secondStatus" class="status">원래 사물: <b>0</b> / ${ones}개 · 새로 생긴 10개: 🔒 먼저 기다려요</div>`;
 
     const avail=document.getElementById('secondAvailable');
-    const secondTake=document.getElementById('secondTake');
     const secondTaken=document.getElementById('secondTakenItems');
-    // ${ones+10}개를 5칸씩 배열. 기존 일의 자리와 새로 풀린 10개를 함께 보여줌.
+    const secondStatus=document.getElementById('secondStatus');
+    const original=[];
+    const broken=[];
+
+    // 5칸씩 줄을 맞춘 배열판. 원래 있던 사물과 새로 풀린 사물을 색으로 구분한다.
     const totalAvail=ones+10;
     for(let i=0;i<totalAvail;i++){
       const x=document.createElement('button');
-      x.className='moveObj'+(i>=ones?' borrowBlue':''); x.textContent='🍎';
+      const isBroken=i>=ones;
+      x.className='moveObj'+(isBroken?' borrowBlue':'');
+      x.textContent='🍎';
+      if(isBroken){x.disabled=true;x.style.opacity='.42';}
       avail.appendChild(x);
+      (isBroken?broken:original).push(x);
+
       makeDraggable(x,target=>{
-        if(target.id!=='secondTake' || secondTaken.children.length>=b)return;
+        if(target.id!=='secondTake' || secondTaken.children.length>=b || x.disabled)return;
         secondTaken.appendChild(x);
         const n=secondTaken.children.length;
-        secondStatus.innerHTML='뺀 수: <b>'+n+'</b> / '+b;
+        const origMoved=Math.min(n,ones);
+        const brokenMoved=Math.max(0,n-ones);
+        secondStatus.innerHTML='원래 사물: <b>'+origMoved+' / '+ones+'개</b> · 새로 생긴 10개: <b>'+brokenMoved+' / '+missing+'개 필요</b>';
+        if(origMoved===ones && broken.some(o=>!o.disabled)){
+          // 원래의 사물을 모두 옮긴 순간, 새로 풀린 10개만 활성화한다.
+          broken.forEach(o=>{o.disabled=false;o.style.opacity='1';});
+          secondStatus.innerHTML='👏 원래 '+ones+'개를 모두 옮겼어요! 이제 🔵 새로 생긴 10개에서 <b>'+missing+'개</b>를 이어서 옮겨요.';
+        }
         if(n===b)finish();
       });
     }
@@ -497,10 +526,10 @@ function borrowStage(){
     borrowResult.innerHTML=`<div class="resultTitle">🎉 ${b}개를 모두 뺐어요!</div>
       <div class="finalDiagram">
         <div class="finalCol"><b>십의 자리</b><div class="tenRow">${pack(tens-1)}</div><div>${tens-1}개의 10묶음</div></div>
-        <div class="finalCol"><b>일의 자리</b>${itemGrid(remain)}<div>${remain}개가 남았어요</div></div>
+        <div class="finalCol"><b>일의 자리</b>${staticGrid(remain)}<div>${remain}개가 남았어요</div></div>
       </div>
       <div class="hiddenAnswerNote">🔟 1묶음을 풀어 ${ones}+10=${ones+10}개가 되었고, 그중 ${b}개를 뺐어요.</div>`;
-    borrowGuide.innerHTML='👏 아주 잘했어요! 남은 그림을 보고 답을 골라 보세요.';
+    borrowGuide.innerHTML='👏 아주 잘했어요! <b>'+b+'개</b>를 모두 뺐어요. 남은 그림을 보고 답을 골라 보세요.';
     numericAnswers(ans,()=>{st.innerHTML='🎉 정답이에요!';retry(borrowStage)});
   }
 }
