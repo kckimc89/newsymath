@@ -511,8 +511,8 @@ function borrowStage(){
         const origMoved=Math.min(n,ones);
         const brokenMoved=Math.max(0,n-ones);
         secondStatus.innerHTML='원래 사물: <b>'+origMoved+' / '+ones+'개</b> · 새로 생긴 10개: <b>'+brokenMoved+' / '+missing+'개 필요</b>';
-        if(origMoved===ones && broken.some(o=>!o.disabled)){
-          // 원래의 사물을 모두 옮긴 순간, 새로 풀린 10개만 활성화한다.
+        if(origMoved===ones){
+          // 원래 사물을 모두 옮긴 바로 그 순간 새로 생긴 10개를 활성화한다.
           broken.forEach(o=>{o.disabled=false;o.style.opacity='1';});
           secondStatus.innerHTML='👏 원래 '+ones+'개를 모두 옮겼어요! 이제 🔵 새로 생긴 10개에서 <b>'+missing+'개</b>를 이어서 옮겨요.';
         }
